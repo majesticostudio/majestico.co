@@ -8,6 +8,8 @@ const pagesCollection = defineCollection({
 			title: z.string(),
 			createdAt: z.date(),
 			lastUpdatedAt: z.optional(z.date()),
+			hideHeader: z.optional(z.boolean()),
+			hideFooter: z.optional(z.boolean()),
 			hidden: z.optional(z.boolean()),
 			seo: z.object({
 				title: z.string(),

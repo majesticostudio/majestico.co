@@ -9,8 +9,6 @@ interface Props {
 }
 
 const { project, prevProject, nextProject, ...props } = Astro.props;
-
-const nextProjectSlug = nextProject?.id;
 ---
 
 <Layout {...props} hideFooter={true}>

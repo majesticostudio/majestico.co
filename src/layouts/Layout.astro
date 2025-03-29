@@ -3,6 +3,7 @@ import "@/styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
+import Texture from "@/components/Texture.astro";
 import settings from "@/data/singletons/settings.json";
 import { AstroSeo, type AstroSeoProps } from "@astrolib/seo";
 
@@ -34,7 +35,10 @@ const defaultSeo: AstroSeoProps = {
 				url:
 					ogImage ??
 					settings.defaultSeo.ogImage ??
-					new URL("og.png", new URL(pathWithSlash, Astro.site)).toString(),
+					new URL(
+						"og.png",
+						new URL(pathWithSlash, Astro.site),
+					).toString(),
 				width: 1200,
 				height: 630,
 				alt: settings.defaultSeo.title,
@@ -68,6 +72,7 @@ const seo = { ...defaultSeo, ...rest };
 		<ClientRouter />
 	</head>
 	<body>
+		<Texture />
 		{!hideHeader && <Header />}
 		<slot />
 		{!hideFooter && <Footer />}

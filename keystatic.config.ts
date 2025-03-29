@@ -9,154 +9,34 @@ import React from "react";
 import Logo from "./src/assets/style/logo.svg?react";
 
 export const components: Record<string, ContentComponent> = {
-	HeroVideo: block({
-		label: "Hero Video",
+	HomeSlider: block({
+		label: "Home Slider",
 		schema: {
-			imageUrl: fields.image({
-				label: "Image",
-				description: "Upload an image to use as the overlay",
-				directory: "src/assets/pages",
-				publicPath: "/src/assets/pages/",
-			}),
-			desktopVideoUrl: fields.url({
-				label: "Desktop Video URL",
-				description: "The video should be a link to an mp4 file",
-				validation: { isRequired: true },
-			}),
-			mobileVideoUrl: fields.url({
-				label: "Mobile Video URL",
-				description: "The video should be a link to an mp4 file",
-				validation: { isRequired: true },
-			}),
-			startDate: fields.text({
-				label: "Start Date",
-			}),
-			endDate: fields.text({
-				label: "End Date",
-			}),
-		},
-	}),
-	Banner: block({
-		label: "Banner",
-		schema: {
-			subtitle: fields.text({
-				label: "Subtitle",
-			}),
-			dateRange: fields.text({
-				label: "Date Range",
-			}),
-			hours: fields.text({
-				label: "Hours",
-				description: "Enter hours as a JSON-like object",
-				multiline: true,
-			}),
-			location: fields.object(
-				{
-					venue: fields.text({
-						label: "Venue Name",
+			projects: fields.array(
+				fields.object({
+					title: fields.text({
+						label: "Project Title",
+						validation: { isRequired: true },
 					}),
-				},
+					image: fields.image({
+						label: "Project Image",
+						description: "Upload an image for this project",
+						directory: "public/images/projects",
+						publicPath: "/public/images/projects/",
+						validation: { isRequired: true },
+					}),
+					isAlternate: fields.checkbox({
+						label: "Alternate Layout",
+						description: "Check this to alternate the layout of this project",
+						defaultValue: false,
+					}),
+				}),
 				{
-					label: "Location",
-				},
-			),
-			imageUrl: fields.image({
-				label: "Image",
-				description: "Upload an image to use as the banner",
-				directory: "src/assets/pages",
-				publicPath: "/src/assets/pages/",
-			}),
-		},
-	}),
-	Magazine: block({
-		label: "Magazine",
-		schema: {
-			artists: fields.object(
-				{
-					leftColumn: fields.array(
-						fields.text({
-							label: "Artist Name",
-						}),
-						{
-							label: "Left Column Artists",
-							itemLabel: (props) => props.value || "Artist",
-						},
-					),
-					rightColumn: fields.array(
-						fields.text({
-							label: "Artist Name",
-						}),
-						{
-							label: "Right Column Artists",
-							itemLabel: (props) => props.value || "Artist",
-						},
-					),
-					bottomColumn: fields.array(
-						fields.text({
-							label: "Artist Name",
-						}),
-						{
-							label: "Bottom Column Artists",
-							itemLabel: (props) => props.value || "Artist",
-						},
-					),
-				},
-				{
-					label: "Artists",
-				},
-			),
-			magazineButtons: fields.array(
-				fields.object(
-					{
-						label: fields.text({
-							label: "Button Text",
-							defaultValue: "Scarica il Magazine",
-						}),
-						file: fields.file({
-							label: "Magazine File",
-							description: "PDF or other document to download",
-							directory: "public/files",
-							publicPath: "/files/",
-						}),
-					},
-					{
-						label: "Magazine Download Button",
-					},
-				),
-				{
-					label: "Buttons",
-					itemLabel: (props) => props.fields?.label?.value || "Button",
+					label: "Projects",
+					itemLabel: (props) => props.fields?.title?.value || "Project",
 				},
 			),
 		},
-	}),
-	TitleImage: block({
-		label: "Title Image",
-		schema: {
-			title: fields.text({
-				label: "Title",
-				defaultValue: "ACT",
-			}),
-			subtitle: fields.text({
-				label: "Subtitle",
-				defaultValue: "Associazione Culturale Territorio",
-			}),
-			description: fields.text({
-				label: "Description",
-				defaultValue: "Lorem ipsum dolor sit amet",
-				multiline: true,
-			}),
-			imageUrl: fields.image({
-				label: "Logo Image",
-				description: "Upload an image to use as the logo (optional)",
-				directory: "src/assets/pages",
-				publicPath: "/src/assets/pages/",
-			}),
-		},
-	}),
-	LineSeparator: block({
-		label: "Line Separator",
-		schema: {},
 	}),
 };
 
@@ -207,6 +87,16 @@ export default config({
 					defaultValue: {
 						kind: "today",
 					},
+				}),
+				hideHeader: fields.checkbox({
+					label: "Hide Header",
+					description: "Hide the header from this page",
+					defaultValue: false,
+				}),
+				hideFooter: fields.checkbox({
+					label: "Hide Footer",
+					description: "Hide the footer from this page",
+					defaultValue: false,
 				}),
 				hidden: fields.checkbox({
 					label: "Hidden",
