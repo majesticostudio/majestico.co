@@ -5,33 +5,17 @@
 @font-face {
 	font-family: "SangBleu";
 	font-style: normal;
-	font-weight: 500;
+	font-weight: 100;
 	font-display: swap;
-	src: url("/fonts/SangBleu/SangBleuVersaillesRegularItalic.woff2") format("woff2");
-}
-
-@font-face {
-	font-family: "SangBleu";
-	font-style: italic;
-	font-weight: 500;
-	font-display: swap;
-	src: url("/fonts/SangBleu/SangBleuVersaillesRegularItalic.woff2") format("woff2");
+	src: url("/fonts/SangBleu/SangBleuKingdom-Air-WebS.woff2") format("woff2");
 }
 
 @font-face {
 	font-family: "SangBleu";
 	font-style: normal;
-	font-weight: 700;
+	font-weight: 200;
 	font-display: swap;
-	src: url("/fonts/SangBleu/SangBleuVersaillesBold.woff2") format("woff2");
-}
-
-@font-face {
-	font-family: "SangBleu";
-	font-style: italic;
-	font-weight: 700;
-	font-display: swap;
-	src: url("/fonts/SangBleu/SangBleuVersaillesBoldItalic.woff2") format("woff2");
+	src: url("/fonts/SangBleu/SangBleuKingdom-Light-WebS.woff2") format("woff2");
 }
 
 @font-face {
@@ -39,19 +23,70 @@
 	font-style: normal;
 	font-weight: 400;
 	font-display: swap;
-	src: url("/fonts/SangBleu/SangBleuVersaillesBook.woff2") format("woff2");
+	src: url("/fonts/SangBleu/SangBleuKingdom-Regular-WebS.woff2") format("woff2");
 }
 
 @font-face {
 	font-family: "SangBleu";
 	font-style: normal;
-	font-weight: 500;
+	font-weight: 600;
 	font-display: swap;
-	src: url("/fonts/SangBleu/SangBleuVersaillesMedium.woff2") format("woff2");
+	src: url("/fonts/SangBleu/SangBleuKingdom-Medium-WebS.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "SangBleu";
+	font-style: normal;
+	font-weight: 800;
+	font-display: swap;
+	src: url("/fonts/SangBleu/SangBleuKingdom-Bold-WebS.woff2") format("woff2");
+}
+
+/* EuclidSquare */
+
+@font-face {
+	font-family: "EuclidSquare";
+	font-style: normal;
+	font-weight: 200;
+	font-display: swap;
+	src: url("/fonts/SangBleu/EuclidSquare-Light-WebS.woff2") format("woff2");
+}
+
+
+@font-face {
+	font-family: "EuclidSquare";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("/fonts/SangBleu/EuclidSquare-Regular-WebS.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "EuclidSquare";
+	font-style: normal;
+	font-weight: 600;
+	font-display: swap;
+	src: url("/fonts/SangBleu/EuclidSquare-Medium-WebS.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "EuclidSquare";
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url("/fonts/SangBleu/EuclidSquare-Semibold-WebS.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "EuclidSquare";
+	font-style: normal;
+	font-weight: 800;
+	font-display: swap;
+	src: url("/fonts/SangBleu/EuclidSquare-Bold-WebS.woff2") format("woff2");
 }
 
 @theme {
-	--font-sans: "SangBleu", sans-serif;
+	--font-sans: "EuclidSquare", sans-serif;
 	--font-display: "SangBleu", sans-serif;
 	--color-primary: #231f20;
 }
