@@ -22,7 +22,7 @@ export const components: Record<string, ContentComponent> = {
 						label: "Project Image",
 						description: "Upload an image for this project",
 						directory: "public/images/projects",
-						publicPath: "/public/images/projects/",
+						publicPath: "/images/projects/",
 						validation: { isRequired: true },
 					}),
 					isAlternate: fields.checkbox({
