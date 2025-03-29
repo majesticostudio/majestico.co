@@ -1,0 +1,35 @@
+---
+import { Image } from "astro:assets";
+import headerConfig from "@/data/singletons/header.json";
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+	"/src/assets/**/*.{webp,jpeg,jpg,png,gif,svg}",
+);
+---
+
+<header class="absolute top-0 left-0 right-0 z-50">
+	<nav class="flex justify-between items-center px-5 lg:px-12 py-8">
+		<a href="/">
+			{
+				headerConfig.logo && (
+					<Image
+						src={images[headerConfig.logo]()}
+						alt="Logo"
+						class="w-14"
+					/>
+				)
+			}
+		</a>
+		<div>
+			{
+				headerConfig.actLogo && (
+					<Image
+						src={images[headerConfig.actLogo]()}
+						alt="ACT"
+						class="w-16"
+					/>
+				)
+			}
+		</div>
+	</nav>
+</header>

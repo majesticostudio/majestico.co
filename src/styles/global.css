@@ -1,0 +1,28 @@
+@import url('https://fonts.cdnfonts.com/css/neue-haas-grotesk-display-pro');
+@import "tailwindcss";
+@import "tailwindcss-animated";
+
+
+@font-face {
+	font-family: "VictorSerif";
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: url("/fonts/VictorSerif-50Medium.woff2") format("woff2");
+}
+
+@theme {
+	--font-sans: "Neue Haas Grotesk Display Pro", sans-serif;
+	--font-display: "VictorSerif", sans-serif;
+	--color-primary: #231f20;
+}
+
+::selection {
+	@apply bg-primary text-white;
+}
+
+[data-reveal-on-scroll] {
+	opacity: 0;
+	transform: translateY(50px);
+	visibility: hidden;
+}
