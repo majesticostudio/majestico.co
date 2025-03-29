@@ -2,18 +2,57 @@
 @import "tailwindcss";
 @import "tailwindcss-animated";
 
-
 @font-face {
-	font-family: "VictorSerif";
+	font-family: "SangBleu";
 	font-style: normal;
 	font-weight: 500;
 	font-display: swap;
-	src: url("/fonts/VictorSerif-50Medium.woff2") format("woff2");
+	src: url("/fonts/SangBleu/SangBleuVersaillesRegularItalic.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "SangBleu";
+	font-style: italic;
+	font-weight: 500;
+	font-display: swap;
+	src: url("/fonts/SangBleu/SangBleuVersaillesRegularItalic.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "SangBleu";
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url("/fonts/SangBleu/SangBleuVersaillesBold.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "SangBleu";
+	font-style: italic;
+	font-weight: 700;
+	font-display: swap;
+	src: url("/fonts/SangBleu/SangBleuVersaillesBoldItalic.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "SangBleu";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("/fonts/SangBleu/SangBleuVersaillesBook.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "SangBleu";
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: url("/fonts/SangBleu/SangBleuVersaillesMedium.woff2") format("woff2");
 }
 
 @theme {
-	--font-sans: "Neue Haas Grotesk Display Pro", sans-serif;
-	--font-display: "VictorSerif", sans-serif;
+	--font-sans: "SangBleu", sans-serif;
+	--font-display: "SangBleu", sans-serif;
 	--color-primary: #231f20;
 }
 
