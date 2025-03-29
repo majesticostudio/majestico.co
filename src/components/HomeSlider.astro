@@ -28,7 +28,7 @@ const { projects } = Astro.props;
 				<h1
 					class="uppercase text-[2.5rem] font-medium tracking-[-0.0125rem] p-2"
 				>
-					01
+					I
 				</h1>
 			</div>
 		</div>
@@ -54,6 +54,7 @@ const { projects } = Astro.props;
 		left: 0;
 		right: 0;
 		will-change: transform;
+		font-family: "SangBleu", sans-serif;
 	}
 
 	.project.template {
@@ -143,6 +144,8 @@ const { projects } = Astro.props;
 		let bounds: Bounds | null = null;
 		let currentTranslateY = 0;
 		let targetTranslateY = 0;
+		let lastScrollPosition = 0;
+		let scrollVelocity = 0;
 
 		const updateBounds = (): void => {
 			if (imageElement) {
@@ -156,13 +159,22 @@ const { projects } = Astro.props;
 
 		const update = (scroll: number): void => {
 			if (!bounds) return;
-			const relativeScroll = -scroll - bounds.top;
-			targetTranslateY = relativeScroll * 0.2;
-			currentTranslateY = lerp(currentTranslateY, targetTranslateY, 0.1);
 
-			if (Math.abs(currentTranslateY - targetTranslateY) > 0.01) {
-				imageElement.style.transform = `translateY(${currentTranslateY}px) scale(1.5)`;
-			}
+			// Calculate scroll velocity for dynamic parallax
+			scrollVelocity = scroll - lastScrollPosition;
+			lastScrollPosition = scroll;
+
+			// Base parallax effect
+			const relativeScroll = -scroll - bounds.top;
+			// Add a velocity component to the parallax for scrubbing effect
+			targetTranslateY = relativeScroll * 0.3 + scrollVelocity * 0.1;
+
+			// Smooth transition
+			currentTranslateY = lerp(currentTranslateY, targetTranslateY, 0.08);
+
+			// Apply with slight directional scale effect for more dynamic feeling
+			const scaleEffect = 1.5 + Math.abs(scrollVelocity) * 0.001;
+			imageElement.style.transform = `translateY(${currentTranslateY}px) scale(${scaleEffect})`;
 		};
 
 		updateBounds();
@@ -174,6 +186,31 @@ const { projects } = Astro.props;
 			((Math.abs(index) % projectData.length) + projectData.length) %
 			projectData.length;
 		return projectData[dataIndex];
+	};
+
+	const toRomanNumeral = (num: number): string => {
+		const romanNumerals = [
+			{ value: 100, numeral: "C" },
+			{ value: 90, numeral: "XC" },
+			{ value: 50, numeral: "L" },
+			{ value: 40, numeral: "XL" },
+			{ value: 10, numeral: "X" },
+			{ value: 9, numeral: "IX" },
+			{ value: 5, numeral: "V" },
+			{ value: 4, numeral: "IV" },
+			{ value: 1, numeral: "I" },
+		];
+
+		let result = "";
+
+		for (const { value, numeral } of romanNumerals) {
+			while (num >= value) {
+				result += numeral;
+				num -= value;
+			}
+		}
+
+		return result;
 	};
 
 	const createProjectElement = (index: number): void => {
@@ -188,7 +225,8 @@ const { projects } = Astro.props;
 			((Math.abs(index) % projectData.length) + projectData.length) %
 			projectData.length;
 		const data = getProjectData(index);
-		const projectNumber = (dataIndex + 1).toString().padStart(2, "0");
+		const projectNumber = dataIndex + 1;
+		const romanNumber = toRomanNumeral(projectNumber);
 
 		project.innerHTML = data.isAlternate
 			? `<div class="side flex-1 h-full overflow-hidden">
@@ -199,13 +237,13 @@ const { projects } = Astro.props;
        <div class="side flex-1 h-full overflow-hidden">
          <div class="flex justify-between items-center">
            <h1 class="uppercase text-[2.5rem] font-medium tracking-[-0.0125rem] p-2">${data.title}</h1>
-           <h1 class="uppercase text-[2.5rem] font-medium tracking-[-0.0125rem] p-2">${projectNumber}</h1>
+           <h1 class="uppercase text-[2.5rem] font-medium tracking-[-0.0125rem] p-2">${romanNumber}</h1>
          </div>
        </div>`
 			: `<div class="side flex-1 h-full overflow-hidden">
          <div class="flex justify-between items-center">
            <h1 class="uppercase text-[2.5rem] font-medium tracking-[-0.0125rem] p-2">${data.title}</h1>
-           <h1 class="uppercase text-[2.5rem] font-medium tracking-[-0.0125rem] p-2">${projectNumber}</h1>
+           <h1 class="uppercase text-[2.5rem] font-medium tracking-[-0.0125rem] p-2">${romanNumber}</h1>
          </div>
        </div>
        <div class="side flex-1 h-full overflow-hidden">
