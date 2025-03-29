@@ -60,11 +60,11 @@ const { projects } = Astro.props;
 		display: none;
 	}
 
-	.side {
+	:global(.side) {
 		flex: 1;
 		height: 100%;
 		overflow: hidden;
-		padding: 10rem;
+		padding: 5rem;
 	}
 
 	:global(::-webkit-scrollbar) {
@@ -87,7 +87,6 @@ const { projects } = Astro.props;
 		BUFFER_SIZE: 15,
 		CLEANUP_THRESHOLD: 50,
 		MAX_VELOCITY: 120,
-		SNAP_DURATION: 500,
 	};
 
 	interface ProjectData {
@@ -112,10 +111,6 @@ const { projects } = Astro.props;
 		projects: Map<number, HTMLElement>;
 		parallaxImages: Map<number, ParallaxImage>;
 		projectHeight: number;
-		isSnapping: boolean;
-		snapStartTime: number;
-		snapStartY: number;
-		snapTargetY: number;
 		lastScrollTime: number;
 		isScrolling: boolean;
 	}
@@ -140,10 +135,6 @@ const { projects } = Astro.props;
 		projects: new Map(),
 		parallaxImages: new Map(),
 		projectHeight: window.innerHeight,
-		isSnapping: false,
-		snapStartTime: 0,
-		snapStartY: 0,
-		snapTargetY: 0,
 		lastScrollTime: Date.now(),
 		isScrolling: false,
 	};
@@ -267,52 +258,7 @@ const { projects } = Astro.props;
 		});
 	};
 
-	const getClosestSnapPoint = (): number => {
-		const currentIndex = Math.round(-state.targetY / state.projectHeight);
-		return -currentIndex * state.projectHeight;
-	};
-
-	const initiateSnap = (): void => {
-		state.isSnapping = true;
-		state.snapStartTime = Date.now();
-		state.snapStartY = state.targetY;
-		state.snapTargetY = getClosestSnapPoint();
-	};
-
-	const updateSnap = (): void => {
-		const elapsed = Date.now() - state.snapStartTime;
-		const progress = Math.min(elapsed / config.SNAP_DURATION, 1);
-
-		const t = 1 - Math.pow(1 - progress, 3);
-
-		state.targetY =
-			state.snapStartY + (state.snapTargetY - state.snapStartY) * t;
-
-		if (progress >= 1) {
-			state.isSnapping = false;
-			state.targetY = state.snapTargetY;
-		}
-	};
-
 	const animate = (): void => {
-		const now = Date.now();
-		const timeSinceLastScroll = now - state.lastScrollTime;
-
-		if (
-			!state.isSnapping &&
-			!state.isDragging &&
-			timeSinceLastScroll > 100
-		) {
-			const snapPoint = getClosestSnapPoint();
-			if (Math.abs(state.targetY - snapPoint) > 1) {
-				initiateSnap();
-			}
-		}
-
-		if (state.isSnapping) {
-			updateSnap();
-		}
-
 		if (!state.isDragging) {
 			state.currentY +=
 				(state.targetY - state.currentY) * config.LERP_FACTOR;
@@ -335,7 +281,6 @@ const { projects } = Astro.props;
 
 	const handleWheel = (e: WheelEvent): void => {
 		e.preventDefault();
-		state.isSnapping = false;
 		state.lastScrollTime = Date.now();
 
 		const scrollDelta = e.deltaY * config.SCROLL_SPEED;
@@ -347,7 +292,6 @@ const { projects } = Astro.props;
 
 	const handleTouchStart = (e: TouchEvent): void => {
 		state.isDragging = true;
-		state.isSnapping = false;
 		state.startY = e.touches[0].clientY;
 		state.lastY = state.targetY;
 		state.lastScrollTime = Date.now();
