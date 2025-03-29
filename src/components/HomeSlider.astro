@@ -77,6 +77,15 @@ const { projects } = Astro.props;
 		justify-content: space-between;
 		align-items: center;
 	}
+
+	:global(::-webkit-scrollbar) {
+		display: none;
+	}
+
+	:global(*) {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
 </style>
 
 <script>
