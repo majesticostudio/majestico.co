@@ -89,7 +89,8 @@ const { projects } = Astro.props;
 </style>
 
 <script>
-	const lerp = (start, end, factor) => start + (end - start) * factor;
+	const lerp = (start: number, end: number, factor: number): number =>
+		start + (end - start) * factor;
 
 	const config = {
 		SCROLL_SPEED: 0.75,
@@ -100,13 +101,47 @@ const { projects } = Astro.props;
 		SNAP_DURATION: 500,
 	};
 
+	interface ProjectData {
+		title: string;
+		image: string;
+		isAlternate: boolean;
+	}
+
 	// Get the data from the attribute
-	const projectData = JSON.parse(
+	const projectData: ProjectData[] = JSON.parse(
 		(document.querySelector("[data-projects]") as HTMLElement)?.dataset
 			.projects || "[]",
 	);
 
-	const state = {
+	interface State {
+		currentY: number;
+		targetY: number;
+		lastY: number;
+		scrollVelocity: number;
+		isDragging: boolean;
+		startY: number;
+		projects: Map<number, HTMLElement>;
+		parallaxImages: Map<number, ParallaxImage>;
+		projectHeight: number;
+		isSnapping: boolean;
+		snapStartTime: number;
+		snapStartY: number;
+		snapTargetY: number;
+		lastScrollTime: number;
+		isScrolling: boolean;
+	}
+
+	interface Bounds {
+		top: number;
+		bottom: number;
+	}
+
+	interface ParallaxImage {
+		update: (scroll: number) => void;
+		updateBounds: () => void;
+	}
+
+	const state: State = {
 		currentY: 0,
 		targetY: 0,
 		lastY: 0,
@@ -124,12 +159,12 @@ const { projects } = Astro.props;
 		isScrolling: false,
 	};
 
-	const createParallaxImage = (imageElement) => {
-		let bounds = null;
+	const createParallaxImage = (imageElement: HTMLElement): ParallaxImage => {
+		let bounds: Bounds | null = null;
 		let currentTranslateY = 0;
 		let targetTranslateY = 0;
 
-		const updateBounds = () => {
+		const updateBounds = (): void => {
 			if (imageElement) {
 				const rect = imageElement.getBoundingClientRect();
 				bounds = {
@@ -139,7 +174,7 @@ const { projects } = Astro.props;
 			}
 		};
 
-		const update = (scroll) => {
+		const update = (scroll: number): void => {
 			if (!bounds) return;
 			const relativeScroll = -scroll - bounds.top;
 			targetTranslateY = relativeScroll * 0.2;
@@ -154,14 +189,14 @@ const { projects } = Astro.props;
 		return { update, updateBounds };
 	};
 
-	const getProjectData = (index) => {
+	const getProjectData = (index: number): ProjectData => {
 		const dataIndex =
 			((Math.abs(index) % projectData.length) + projectData.length) %
 			projectData.length;
 		return projectData[dataIndex];
 	};
 
-	const createProjectElement = (index) => {
+	const createProjectElement = (index: number): void => {
 		if (state.projects.has(index)) return;
 
 		const template = document.querySelector(".template");
@@ -211,16 +246,16 @@ const { projects } = Astro.props;
 		}
 	};
 
-	const createInitialProjects = () => {
+	const createInitialProjects = (): void => {
 		for (let i = -config.BUFFER_SIZE; i <= config.BUFFER_SIZE; i++) {
 			createProjectElement(i);
 		}
 	};
 
-	const getCurrentIndex = () =>
+	const getCurrentIndex = (): number =>
 		Math.round(-state.targetY / state.projectHeight);
 
-	const checkAndCreateProjects = () => {
+	const checkAndCreateProjects = (): void => {
 		const currentIndex = getCurrentIndex();
 		const minNeeded = currentIndex - config.BUFFER_SIZE;
 		const maxNeeded = currentIndex + config.BUFFER_SIZE;
@@ -243,19 +278,19 @@ const { projects } = Astro.props;
 		});
 	};
 
-	const getClosestSnapPoint = () => {
+	const getClosestSnapPoint = (): number => {
 		const currentIndex = Math.round(-state.targetY / state.projectHeight);
 		return -currentIndex * state.projectHeight;
 	};
 
-	const initiateSnap = () => {
+	const initiateSnap = (): void => {
 		state.isSnapping = true;
 		state.snapStartTime = Date.now();
 		state.snapStartY = state.targetY;
 		state.snapTargetY = getClosestSnapPoint();
 	};
 
-	const updateSnap = () => {
+	const updateSnap = (): void => {
 		const elapsed = Date.now() - state.snapStartTime;
 		const progress = Math.min(elapsed / config.SNAP_DURATION, 1);
 
@@ -270,7 +305,7 @@ const { projects } = Astro.props;
 		}
 	};
 
-	const animate = () => {
+	const animate = (): void => {
 		const now = Date.now();
 		const timeSinceLastScroll = now - state.lastScrollTime;
 
@@ -309,7 +344,7 @@ const { projects } = Astro.props;
 		requestAnimationFrame(animate);
 	};
 
-	const handleWheel = (e) => {
+	const handleWheel = (e: WheelEvent): void => {
 		e.preventDefault();
 		state.isSnapping = false;
 		state.lastScrollTime = Date.now();
@@ -321,7 +356,7 @@ const { projects } = Astro.props;
 		);
 	};
 
-	const handleTouchStart = (e) => {
+	const handleTouchStart = (e: TouchEvent): void => {
 		state.isDragging = true;
 		state.isSnapping = false;
 		state.startY = e.touches[0].clientY;
@@ -329,18 +364,18 @@ const { projects } = Astro.props;
 		state.lastScrollTime = Date.now();
 	};
 
-	const handleTouchMove = (e) => {
+	const handleTouchMove = (e: TouchEvent): void => {
 		if (!state.isDragging) return;
 		const deltaY = (e.touches[0].clientY - state.startY) * 1.5;
 		state.targetY = state.lastY + deltaY;
 		state.lastScrollTime = Date.now();
 	};
 
-	const handleTouchEnd = () => {
+	const handleTouchEnd = (): void => {
 		state.isDragging = false;
 	};
 
-	const handleResize = () => {
+	const handleResize = (): void => {
 		state.projectHeight = window.innerHeight;
 		state.projects.forEach((project, index) => {
 			project.style.transform = `translateY(${index * state.projectHeight}px)`;
@@ -351,7 +386,7 @@ const { projects } = Astro.props;
 		});
 	};
 
-	const initializeScroll = () => {
+	const initializeScroll = (): void => {
 		window.addEventListener("wheel", handleWheel, { passive: false });
 		window.addEventListener("touchstart", handleTouchStart);
 		window.addEventListener("touchmove", handleTouchMove);
