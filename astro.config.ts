@@ -8,6 +8,7 @@ import tailwindcss from "@tailwindcss/vite";
 import icon from "astro-icon";
 import robotsTxt from "astro-robots-txt";
 import { defineConfig } from "astro/config";
+import glsl from "vite-plugin-glsl";
 import svgr from "vite-plugin-svgr";
 import settings from "./src/data/singletons/settings.json";
 
@@ -22,7 +23,7 @@ export default defineConfig({
 		"/admin": "/keystatic",
 	},
 	vite: {
-		plugins: [tailwindcss(), yaml(), svgr()],
+		plugins: [glsl(), tailwindcss(), yaml(), svgr()],
 		resolve: {
 			// Use react-dom/server.edge instead of react-dom/server.browser for React 19.
 			alias: import.meta.env.PROD
