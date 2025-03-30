@@ -7,7 +7,7 @@
 		data-filter="goo-1"
 		data-script="filter1"
 		data-project-title
-		class="text-9xl fixed z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-black"
+		class="text-9xl fixed z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-white"
 	>
 		Majestico
 	</h2>
@@ -52,7 +52,6 @@
 		position: relative;
 	}
 	[data-project-title] {
-		mix-blend-mode: overlay;
 	}
 </style>
 
@@ -226,7 +225,7 @@
 	/**
 	 * Objects
 	 */
-	const material = new THREE.MeshBasicMaterial(0xff0000);
+	const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 	const objectsDistance = sizes.height;
 
 	const mesh1 = MeshItem(1000, 667);
@@ -261,6 +260,13 @@
 	 */
 	let scrollY = window.scrollY;
 	let currentSection = -1;
+	const titleElement = document.querySelector("h2[data-project-title]");
+	const sectionElements = document.querySelectorAll(
+		".section[data-project-title]",
+	);
+	const sectionTitles = Array.from(sectionElements).map((el) =>
+		el.getAttribute("data-project-title"),
+	);
 
 	// shift
 	let shift = 0;
@@ -281,10 +287,67 @@
 	};
 
 	const onSectionEnter = (section: number) => {
-		gsap.to(sectionMeshes[section].material.uniforms.uProgress, {
-			duration: 3.0,
-			value: 1.0,
-		});
+		// Ensure section is within bounds
+		if (section >= 0 && section < sectionMeshes.length) {
+			// Animate the 3D mesh
+			gsap.to(sectionMeshes[section].material.uniforms.uProgress, {
+				duration: 3.0,
+				value: 1.0,
+			});
+
+			// Get the title of the current section
+			if (section < sectionTitles.length && titleElement) {
+				const newTitle = sectionTitles[section];
+
+				// Create a morphing animation for the text
+				const timeline = gsap.timeline();
+
+				// First blur and fade out current text
+				timeline.to(titleElement, {
+					opacity: 0,
+					duration: 0.5,
+					onComplete: () => {
+						// Update the text content
+						titleElement.textContent = newTitle;
+					},
+				});
+
+				// Then apply the morphText effect to reveal the new title
+				timeline.add(() => {
+					// Reset the blur effect
+					const filterId = titleElement.getAttribute("data-filter");
+					const feBlur = document.querySelector(
+						`#${filterId} feGaussianBlur`,
+					);
+					if (feBlur) {
+						feBlur.setAttribute("stdDeviation", "50");
+					}
+
+					// Animate from blurred to sharp
+					let primitiveValues = { stdDeviation: 50 };
+					gsap.to(primitiveValues, {
+						stdDeviation: 0,
+						duration: 2,
+						ease: "expo",
+						onUpdate: () => {
+							if (feBlur) {
+								feBlur.setAttribute(
+									"stdDeviation",
+									primitiveValues.stdDeviation.toString(),
+								);
+							}
+						},
+					});
+
+					// Fade in the text
+					gsap.to(titleElement, {
+						opacity: 1,
+						duration: 2,
+						ease: "expo",
+					});
+				});
+			}
+		}
 	};
 
 	/**
