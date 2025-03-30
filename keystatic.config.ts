@@ -9,7 +9,7 @@ import React from "react";
 import Logo from "./src/assets/style/logo.svg?react";
 
 export const components: Record<string, ContentComponent> = {
-	HomeSlider: block({
+	Projects: block({
 		label: "Home Slider",
 		schema: {
 			projects: fields.array(

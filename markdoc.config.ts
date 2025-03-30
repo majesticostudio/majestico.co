@@ -15,11 +15,11 @@ export default defineMarkdocConfig({
 		},
 	},
 	tags: {
-		HomeSlider: {
+		Projects: {
 			attributes: {
 				projects: { type: Array },
 			},
-			render: component("./src/components/HomeSlider.astro"),
+			render: component("./src/components/Projects.astro"),
 		},
 	},
 });
