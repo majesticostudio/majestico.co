@@ -5,11 +5,9 @@
 <div class="content">
 	<h2
 		data-filter="goo-1"
-		data-script="filter1"
-		data-project-title
-		class="text-9xl fixed z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-display text-white"
+		id="project-title"
+		class="text-3xl fixed z-10 top-10 left-1/2 -translate-x-1/2 font-display text-black opacity-0"
 	>
-		Majestico
 	</h2>
 	<canvas class="webgl"></canvas>
 	<svg class="hidden">
@@ -33,9 +31,9 @@
 		</defs>
 	</svg>
 
-	<section class="section" data-project-title="Inserta"></section>
-	<section class="section" data-project-title="Overthewildborders"></section>
 	<section class="section" data-project-title="Majestico"></section>
+	<section class="section" data-project-title="Overthewildborders"></section>
+	<section class="section" data-project-title="Inserta"></section>
 	<section class="section" data-project-title="Wave"></section>
 </div>
 
@@ -51,7 +49,8 @@
 		height: 100vh;
 		position: relative;
 	}
-	[data-project-title] {
+	#project-title {
+		mix-blend-mode: soft-light;
 	}
 </style>
 
@@ -184,13 +183,10 @@
 	const canvas = document.querySelector("canvas.webgl") as HTMLCanvasElement;
 	const scene = new THREE.Scene();
 
-	const textElements = document.querySelectorAll(
-		"[data-project-title]",
-	) as NodeListOf<HTMLElement>;
-
-	textElements.forEach((textElement) => {
-		morphText(textElement);
-	});
+	const titleElement = document.getElementById(
+		"project-title",
+	) as HTMLElement;
+	morphText(titleElement);
 
 	const sizes = {
 		width: window.innerWidth,
@@ -260,7 +256,6 @@
 	 */
 	let scrollY = window.scrollY;
 	let currentSection = -1;
-	const titleElement = document.querySelector("h2[data-project-title]");
 	const sectionElements = document.querySelectorAll(
 		".section[data-project-title]",
 	);
@@ -299,53 +294,53 @@
 			if (section < sectionTitles.length && titleElement) {
 				const newTitle = sectionTitles[section];
 
-				// Create a morphing animation for the text
-				const timeline = gsap.timeline();
+				// Get the filter ID from the element's data attribute
+				const filterId = titleElement.getAttribute("data-filter");
+				const feBlur = document.querySelector(
+					`#${filterId} feGaussianBlur`,
+				);
 
-				// First blur and fade out current text
-				timeline.to(titleElement, {
-					opacity: 0,
-					duration: 0.5,
-					onComplete: () => {
-						// Update the text content
-						titleElement.textContent = newTitle;
-					},
-				});
+				if (feBlur) {
+					// Create a timeline for the morphing effect
+					const tl = gsap.timeline();
 
-				// Then apply the morphText effect to reveal the new title
-				timeline.add(() => {
-					// Reset the blur effect
-					const filterId = titleElement.getAttribute("data-filter");
-					const feBlur = document.querySelector(
-						`#${filterId} feGaussianBlur`,
-					);
-					if (feBlur) {
-						feBlur.setAttribute("stdDeviation", "50");
-					}
-
-					// Animate from blurred to sharp
-					let primitiveValues = { stdDeviation: 50 };
-					gsap.to(primitiveValues, {
-						stdDeviation: 0,
-						duration: 2,
-						ease: "expo",
-						onUpdate: () => {
-							if (feBlur) {
+					// Phase 1: Quick blur out the current text
+					tl.to(
+						{ stdDeviation: 0 },
+						{
+							stdDeviation: 20,
+							duration: 1,
+							ease: "power1.in",
+							onUpdate: function () {
 								feBlur.setAttribute(
 									"stdDeviation",
-									primitiveValues.stdDeviation.toString(),
+									this.targets()[0].stdDeviation.toString(),
 								);
-							}
+							},
+							// When fully blurred, change the text content
+							onComplete: () => {
+								titleElement.textContent = newTitle;
+							},
 						},
-					});
+					)
 
-					// Fade in the text
-					gsap.to(titleElement, {
-						opacity: 1,
-						duration: 2,
-						ease: "expo",
-					});
-				});
+						// Phase 2: Quick blur in the new text
+						.to(
+							{ stdDeviation: 20 },
+							{
+								stdDeviation: 0,
+								duration: 1,
+								ease: "power1.out",
+								onUpdate: function () {
+									feBlur.setAttribute(
+										"stdDeviation",
+										this.targets()[0].stdDeviation.toString(),
+									);
+								},
+							},
+							"<=+0.5",
+						);
+				}
 			}
 		}
 	};

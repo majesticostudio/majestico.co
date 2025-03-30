@@ -16,53 +16,10 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 <Layout {...props} hideFooter={true}>
 	<div
 		class="project-page"
+		id="project-page"
 		data-prev-project-id={prevProject?.id}
 		data-next-project-id={nextProject?.id}
 	>
-		<div
-			class="fixed top-0 left-0 right-0 bg-white flex justify-between items-center px-4 sm:px-8 py-4 z-50"
-			id="projectNav"
-			data-prev-project-id={prevProject?.id}
-			data-next-project-id={nextProject?.id}
-		>
-			{
-				prevProject && (
-					<div class="flex items-center">
-						<span>&#8592;&nbsp;</span>
-						<a
-							href={`/projects/${prevProject.id}`}
-							class="hover:opacity-70 transition-opacity"
-						>
-							Previous
-						</a>
-					</div>
-				)
-			}
-
-			<div class="w-full max-w-[20rem]">
-				<p class="text-sm">{project.data.title}</p>
-				<div
-					class="w-full h-[0.0625rem] bg-black origin-left scale-x-0"
-					id="progressBar"
-				>
-				</div>
-			</div>
-
-			{
-				nextProject && (
-					<div class="flex items-center">
-						<a
-							href={`/projects/${nextProject.id}`}
-							class="hover:opacity-70 transition-opacity"
-						>
-							Next
-						</a>
-						<span>&nbsp;&#8594;</span>
-					</div>
-				)
-			}
-		</div>
-
 		<div
 			class="min-h-screen flex flex-col justify-center items-center px-4 sm:px-8"
 			id="projectHero"
@@ -200,7 +157,7 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 	document.addEventListener("astro:page-load", () => {
 		let isTransitioning = false;
 		let shouldUpdateProgress = true;
-		const projectNav = document.getElementById("projectNav");
+		const projectPage = document.getElementById("project-page");
 		const progressBar = document.getElementById("progressBar");
 		const projectFooter = document.getElementById("projectFooter");
 		const projectTitle = document.getElementById("projectTitle");
@@ -219,7 +176,7 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 		const rightProgressBarMobile = document.getElementById(
 			"rightProgressBarMobile",
 		);
-		const nextProjectId = projectNav?.dataset.nextProjectId;
+		const nextProjectId = projectPage?.dataset.nextProjectId;
 
 		// Register ScrollTrigger plugin
 		gsap.registerPlugin(ScrollTrigger);
@@ -271,18 +228,6 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 				},
 				0.7,
 			); // Start at 70% of the scroll
-
-			// Nav animation
-			tl.to(
-				projectNav,
-				{
-					opacity: 0,
-					y: "-6rem",
-					duration: 0.3,
-					ease: "none",
-				},
-				0,
-			);
 
 			// Cleanup for ScrollTrigger on navigation
 			document.addEventListener("astro:before-preparation", () => {
