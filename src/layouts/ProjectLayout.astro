@@ -75,7 +75,7 @@ const projectRomanNumeral = project.data.order
 							)
 						}
 						<h1
-							class="text-3xl sm:text-5xl text-center whitespace-nowrap font-display"
+							class="text-3xl sm:text-5xl md:text-6xl text-center whitespace-nowrap font-display"
 							id="projectTitle"
 						>
 							{project.data.title}
@@ -117,7 +117,7 @@ const projectRomanNumeral = project.data.order
 				</div>
 
 				<h1
-					class="text-3xl sm:text-5xl text-center whitespace-nowrap font-display"
+					class="text-3xl sm:text-5xl md:text-6xl text-center whitespace-nowrap font-display"
 					id="nextProjectTitle"
 				>
 					{nextProject?.data.title}
@@ -234,8 +234,13 @@ const projectRomanNumeral = project.data.order
 				const progress =
 					linearProgress * linearProgress * (3 - 2 * linearProgress);
 
-				// Scale from 1 to 0.35 based on scroll progress
-				const scale = 1 - 0.65 * progress;
+				// Determine if we're on mobile based on viewport width
+				const isMobile = window.innerWidth < 768; // 768px is typical mobile breakpoint
+
+				// Scale differently based on device size
+				// Desktop: 1 to 0.25, Mobile: 1 to 0.5
+				const scaleReduction = isMobile ? 0.5 : 0.75;
+				const scale = 1 - scaleReduction * progress;
 
 				if (scrollTop > topThreshold) {
 					// Title should be fixed
