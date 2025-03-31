@@ -11,15 +11,43 @@ interface Props {
 }
 
 const { project, prevProject, nextProject, ...props } = Astro.props;
----
 
-<style>
-	.sticky-title {
-		position: sticky;
-		top: 2rem;
-		z-index: 50;
+// Function to convert number to Roman numeral
+function toRoman(num: number): string {
+	const romanNumerals = [
+		{ value: 1000, numeral: "M" },
+		{ value: 900, numeral: "CM" },
+		{ value: 500, numeral: "D" },
+		{ value: 400, numeral: "CD" },
+		{ value: 100, numeral: "C" },
+		{ value: 90, numeral: "XC" },
+		{ value: 50, numeral: "L" },
+		{ value: 40, numeral: "XL" },
+		{ value: 10, numeral: "X" },
+		{ value: 9, numeral: "IX" },
+		{ value: 5, numeral: "V" },
+		{ value: 4, numeral: "IV" },
+		{ value: 1, numeral: "I" },
+	];
+
+	let result = "";
+	// Create a copy of num to avoid modifying the parameter
+	let remaining = num;
+
+	for (const { value, numeral } of romanNumerals) {
+		while (remaining >= value) {
+			result += numeral;
+			remaining -= value;
+		}
 	}
-</style>
+
+	return result;
+}
+
+const projectRomanNumeral = project.data.order
+	? toRoman(project.data.order)
+	: "";
+---
 
 <Layout {...props} hideFooter={true}>
 	<div
@@ -32,52 +60,38 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 			class="min-h-screen flex flex-col justify-center items-center px-4 sm:px-8"
 			id="projectHero"
 		>
-			<p class="text-xs mb-8 opacity-0 pb-12">Next Project</p>
 			<div
-				class="hidden sm:flex items-center justify-center gap-8 w-full max-w-[64rem]"
+				class="flex flex-col items-center w-full max-w-[24rem] sm:max-w-[64rem]"
 			>
-				<div
-					class="relative w-full h-[0.0625rem] bg-black/10 opacity-0"
-				>
-					<div class="absolute inset-0 bg-black"></div>
-				</div>
-				<h1
-					class="text-4xl sm:text-5xl text-center whitespace-nowrap font-display sticky-title"
-					id="projectTitle"
-				>
-					{project.data.title}
-				</h1>
-				<div
-					class="relative w-full h-[0.0625rem] bg-black/10 opacity-0"
-				>
-					<div class="absolute inset-0 bg-black"></div>
+				<div class="flex items-center justify-center w-full gap-8">
+					<div
+						class="flex flex-col items-center sticky top-8 z-50 sm:w-auto pb-[7.3rem] md:pb-40"
+					>
+						{
+							projectRomanNumeral && (
+								<p class="text-sm font-display tracking-wider opacity-70 pb-20 font-normal">
+									{projectRomanNumeral}
+								</p>
+							)
+						}
+						<h1
+							class="text-4xl sm:text-5xl text-center whitespace-nowrap font-display"
+							id="projectTitle"
+						>
+							{project.data.title}
+						</h1>
+					</div>
 				</div>
 			</div>
-			{/* Mobile version */}
-			<div
-				class="sm:hidden flex flex-col items-center w-full gap-20 xl:gap-40 max-w-[24rem]"
-			>
-				<h1
-					class="text-4xl text-center font-display sticky-title"
-					id="projectTitleMobile"
-				>
-					{project.data.title}
-				</h1>
-				<div
-					class="relative w-full h-[0.0625rem] bg-black/10 opacity-0 max-w-32"
-				>
-					<div class="absolute inset-0 bg-black"></div>
-				</div>
-			</div>
-			<p class="text-sm mt-8 opacity-0">Keep Scrolling</p>
 		</div>
 
 		<div class="h-[300vh]"></div>
 
 		<slot />
 
+		<!-- Footer Section -->
 		<div
-			class="min-h-screen flex flex-col justify-center items-center px-4 sm:px-8"
+			class="min-h-screen flex flex-col justify-center items-center px-4 sm:px-8 pb-10 md:pb-[6.5rem]"
 			id="projectFooter"
 		>
 			<p
@@ -87,11 +101,12 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 			>
 				Next Project
 			</p>
+
 			<div
-				class="hidden sm:flex items-center justify-center gap-8 w-full max-w-[64rem]"
+				class="flex flex-col sm:flex-row items-center justify-center w-full max-w-[24rem] sm:max-w-[64rem] sm:gap-8"
 			>
 				<div
-					class="relative w-full h-[0.0625rem] bg-black/10"
+					class="hidden sm:block relative w-full h-[0.0625rem] bg-black/10"
 					data-element-fade-out
 				>
 					<div
@@ -100,14 +115,17 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 					>
 					</div>
 				</div>
+
 				<h1
 					class="text-4xl sm:text-5xl text-center whitespace-nowrap font-display"
 					id="nextProjectTitle"
 				>
 					{nextProject?.data.title}
 				</h1>
+
+				<!-- Right progress bar (desktop) -->
 				<div
-					class="relative w-full h-[0.0625rem] bg-black/10"
+					class="hidden sm:block relative w-full h-[0.0625rem] bg-black/10"
 					data-element-fade-out
 				>
 					<div
@@ -116,20 +134,10 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 					>
 					</div>
 				</div>
-			</div>
 
-			{/* Mobile version */}
-			<div
-				class="sm:hidden flex flex-col items-center w-full gap-20 xl:gap-40 max-w-[24rem]"
-			>
-				<h1
-					class="text-4xl text-center font-display"
-					id="nextProjectTitleMobile"
-				>
-					{nextProject?.data.title}
-				</h1>
+				<!-- Mobile progress bar -->
 				<div
-					class="relative w-full h-[0.0625rem] bg-black/10 max-w-32"
+					class="sm:hidden relative w-full h-[0.0625rem] bg-black/10 max-w-32 mt-5"
 					data-element-fade-out
 				>
 					<div
@@ -144,8 +152,9 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 					</div>
 				</div>
 			</div>
+
 			<p
-				class="text-sm mt-8 opacity-60 transition-opacity duration-300"
+				class="text-sm pt-8 opacity-60 transition-opacity duration-300"
 				id="keepScrollingLabel"
 				data-element-fade-out
 			>
@@ -164,40 +173,32 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 	// Initialize animations on page load
 	document.addEventListener("astro:page-load", () => {
 		let isTransitioning = false;
-		let shouldUpdateProgress = true;
 		const projectPage = document.getElementById("project-page");
-		const progressBar = document.getElementById("progressBar");
 		const projectFooter = document.getElementById("projectFooter");
 		const projectTitle = document.getElementById("projectTitle");
-		const nextProjectTitle = document.getElementById("nextProjectTitle");
-		const nextProjectTitleMobile = document.getElementById(
-			"nextProjectTitleMobile",
-		);
-		const nextProjectLabel = document.getElementById("nextProjectLabel");
-		const keepScrollingLabel =
-			document.getElementById("keepScrollingLabel");
-		const leftProgressBar = document.getElementById("leftProgressBar");
-		const rightProgressBar = document.getElementById("rightProgressBar");
-		const leftProgressBarMobile = document.getElementById(
-			"leftProgressBarMobile",
-		);
-		const rightProgressBarMobile = document.getElementById(
-			"rightProgressBarMobile",
-		);
 		const nextProjectId = projectPage?.dataset.nextProjectId;
 
 		// Register ScrollTrigger plugin
 		gsap.registerPlugin(ScrollTrigger);
 
+		// Define types for DOM elements and position data
+		interface TitleRect {
+			top: number;
+			left: number;
+			width: number;
+			height: number;
+			x: number;
+		}
+
 		// Function to apply sticky behavior to a title element
-		function applyStickyBehavior(titleElement) {
+		function applyStickyBehavior(titleElement: HTMLElement): void {
 			if (!titleElement) return;
 
-			let titleOriginalPosition = null;
-			let titleOriginalRect = null;
+			let titleOriginalPosition: DOMRect | null = null;
+			let titleOriginalRect: TitleRect | null = null;
 
 			// Get the original position of the title
-			function saveOriginalPosition() {
+			function saveOriginalPosition(): void {
 				if (!titleElement) return;
 
 				titleOriginalPosition = titleElement.getBoundingClientRect();
@@ -213,7 +214,7 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 			saveOriginalPosition();
 
 			// Function to handle scroll
-			function handleScroll() {
+			function handleScroll(): void {
 				if (!titleOriginalRect || !titleElement) return;
 
 				const scrollTop = window.scrollY;
@@ -273,9 +274,8 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 			handleScroll();
 		}
 
-		// Apply sticky behavior to both desktop and mobile titles
-		applyStickyBehavior(projectTitle);
-		applyStickyBehavior(document.getElementById("projectTitleMobile"));
+		// Apply sticky behavior to title
+		if (projectTitle) applyStickyBehavior(projectTitle);
 
 		// Footer animation and navigation
 		if (projectFooter) {
@@ -297,15 +297,18 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 				},
 			});
 
+			// Select progress bar elements
+			const progressElements = [
+				document.getElementById("leftProgressBar"),
+				document.getElementById("rightProgressBar"),
+				document.getElementById("leftProgressBarMobile"),
+				document.getElementById("rightProgressBarMobile"),
+			].filter(Boolean);
+
 			// Add animations to the timeline
 			// Progress bars animation
 			tl.to(
-				[
-					leftProgressBar,
-					rightProgressBar,
-					leftProgressBarMobile,
-					rightProgressBarMobile,
-				].filter(Boolean),
+				progressElements,
 				{
 					scaleX: 1,
 					duration: 1,
