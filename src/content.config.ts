@@ -29,6 +29,7 @@ const projectsCollection = defineCollection({
 		z.object({
 			title: z.string(),
 			description: z.string(),
+			order: z.number(),
 			createdAt: z.date(),
 			lastUpdatedAt: z.optional(z.date()),
 			hidden: z.optional(z.boolean()),

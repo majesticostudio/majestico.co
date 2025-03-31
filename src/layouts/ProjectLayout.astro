@@ -242,6 +242,7 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 						titleElement.style.position = "fixed";
 						titleElement.style.top = "1rem";
 						titleElement.style.left = "50%";
+						titleElement.style.width = `${titleOriginalRect.width}px`;
 						titleElement.style.transform = `translateX(-50%) scale(${scale})`;
 						titleElement.style.zIndex = "50";
 					} else {
@@ -253,6 +254,7 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 					titleElement.style.position = "";
 					titleElement.style.top = "";
 					titleElement.style.left = "";
+					titleElement.style.width = "";
 					titleElement.style.transform = `scale(${scale})`;
 					titleElement.style.zIndex = "50";
 				}
