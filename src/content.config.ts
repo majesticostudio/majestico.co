@@ -30,6 +30,7 @@ const projectsCollection = defineCollection({
 			title: z.string(),
 			description: z.string(),
 			order: z.number(),
+			link: z.optional(z.string()),
 			createdAt: z.date(),
 			lastUpdatedAt: z.optional(z.date()),
 			hidden: z.optional(z.boolean()),
