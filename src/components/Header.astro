@@ -10,16 +10,20 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 );
 ---
 
-<header class="fixed p-2 lg:p-4 top-0 right-0 left-0 z-20 max-w-[40rem]">
+<header
+	class="fixed p-2 lg:p-4 top-0 right-0 left-0 z-20 max-w-[40rem]"
+	transition:persist="header"
+>
 	<nav
 		id="header-nav"
 		class="w-12 h-12 flex flex-col bg-black overflow-hidden"
 	>
-		<div
+		<button
+			id="menu-button"
 			class="w-12 h-12 min-h-12 cursor-pointer flex items-center justify-center"
 		>
 			<div class="text-white text-2xl font-bold">M</div>
-		</div>
+		</button>
 		<div
 			id="menu-content"
 			class="opacity-0 pointer-events-none flex flex-col grow"
@@ -76,110 +80,6 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 	</nav>
 </header>
 
-<script>
-	import { gsap } from "gsap";
-
-	const headerNav = document.querySelector("#header-nav");
-	const menuContent = document.querySelector("#menu-content");
-	const menuItems = document.querySelectorAll(".menu-item");
-	const contactItems = document.querySelectorAll(".contact-item");
-	const socialItems = document.querySelectorAll(".social-item");
-	let isOpen = false;
-
-	// Opening animation
-	const openAnimation = gsap
-		.timeline({
-			paused: true,
-			defaults: { duration: 0.8, ease: "power4.out" },
-		})
-		.set(headerNav, {
-			maxWidth: "40rem",
-		})
-		.set(menuContent, {
-			opacity: 1,
-			pointerEvents: "auto",
-		})
-		.to(headerNav, {
-			width: "100%",
-			height: "calc(100vh - 2rem)",
-		})
-		.from(
-			menuItems,
-			{
-				x: -80,
-				opacity: 0,
-				stagger: 0.1,
-				duration: 0.6,
-			},
-			"<=+0.2",
-		);
-
-	// Closing animation
-	const closeAnimation = gsap
-		.timeline({
-			paused: true,
-			defaults: { duration: 0.8, ease: "power4.out" },
-		})
-		// Reset menu items, contacts, and socials
-		.to([menuItems, contactItems, socialItems], {
-			opacity: 0,
-			x: -80,
-			stagger: {
-				from: "end",
-				amount: 0.05,
-			},
-			duration: 0.3,
-		})
-		.to(
-			headerNav,
-			{
-				width: "3rem",
-				height: "3rem",
-			},
-			"<",
-		)
-		.to(
-			menuContent,
-			{
-				opacity: 0,
-				pointerEvents: "none",
-			},
-			"<=+0.1",
-		);
-
-	// For desktop
-	if (window.matchMedia("(min-width: 768px)").matches) {
-		headerNav?.addEventListener("mouseenter", () => {
-			if (!isOpen) {
-				closeAnimation.pause(0);
-				openAnimation.play(0);
-				isOpen = true;
-			}
-		});
-
-		headerNav?.addEventListener("mouseleave", () => {
-			if (isOpen) {
-				openAnimation.pause();
-				closeAnimation.play(0);
-				isOpen = false;
-			}
-		});
-	}
-	// For mobile
-	else {
-		headerNav?.addEventListener("click", () => {
-			if (isOpen) {
-				openAnimation.pause();
-				closeAnimation.play(0);
-			} else {
-				closeAnimation.pause(0);
-				openAnimation.play(0);
-			}
-			isOpen = !isOpen;
-		});
-	}
-</script>
-
 <style>
 	#header-nav {
 		position: relative;
@@ -197,4 +97,130 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 	.social-item:hover {
 		color: #888;
 	}
+
+	#menu-button {
+		background: none;
+		border: none;
+		padding: 0;
+	}
 </style>
+
+<script>
+	import { gsap } from "gsap";
+
+	document.addEventListener(
+		"astro:page-load",
+		() => {
+			const headerNav = document.querySelector("#header-nav");
+			const menuButton = document.querySelector("#menu-button");
+			const menuContent = document.querySelector("#menu-content");
+			const menuItems = document.querySelectorAll(".menu-item");
+			const contactItems = document.querySelectorAll(".contact-item");
+			const socialItems = document.querySelectorAll(".social-item");
+			let isOpen = false;
+
+			// Opening animation
+			const openAnimation = gsap
+				.timeline({
+					paused: true,
+					defaults: { duration: 0.8, ease: "power4.out" },
+				})
+				.set(headerNav, {
+					maxWidth: "40rem",
+				})
+				.set(menuContent, {
+					opacity: 1,
+					pointerEvents: "auto",
+				})
+				.to(headerNav, {
+					width: "100%",
+					height: "calc(100vh - 2rem)",
+				})
+				.from(
+					menuItems,
+					{
+						x: -80,
+						opacity: 0,
+						stagger: 0.1,
+						duration: 0.6,
+					},
+					"<=+0.2",
+				);
+
+			// Closing animation
+			const closeAnimation = gsap
+				.timeline({
+					paused: true,
+					defaults: { duration: 0.8, ease: "power4.out" },
+				})
+				// Reset menu items, contacts, and socials
+				.to([menuItems, contactItems, socialItems], {
+					opacity: 0,
+					x: -80,
+					stagger: {
+						from: "end",
+						amount: 0.05,
+					},
+					duration: 0.3,
+				})
+				.to(
+					headerNav,
+					{
+						width: "3rem",
+						height: "3rem",
+					},
+					"<",
+				)
+				.to(
+					menuContent,
+					{
+						opacity: 0,
+						pointerEvents: "none",
+					},
+					"<=+0.1",
+				);
+
+			// Handle menu toggle
+			const toggleMenu = () => {
+				if (isOpen) {
+					openAnimation.pause();
+					closeAnimation.play(0);
+				} else {
+					closeAnimation.pause(0);
+					openAnimation.play(0);
+				}
+				isOpen = !isOpen;
+			};
+
+			// For desktop
+			if (window.matchMedia("(min-width: 768px)").matches) {
+				// Open on hover
+				headerNav?.addEventListener("mouseenter", () => {
+					if (!isOpen) {
+						closeAnimation.pause(0);
+						openAnimation.play(0);
+						isOpen = true;
+					}
+				});
+
+				// Close on mouseleave
+				headerNav?.addEventListener("mouseleave", () => {
+					if (isOpen) {
+						openAnimation.pause();
+						closeAnimation.play(0);
+						isOpen = false;
+					}
+				});
+
+				// Toggle on button click
+				menuButton?.addEventListener("click", toggleMenu);
+			}
+			// For mobile
+			else {
+				// Toggle on button click only
+				menuButton?.addEventListener("click", toggleMenu);
+			}
+		},
+		{ once: true },
+	);
+</script>
