@@ -13,6 +13,14 @@ interface Props {
 const { project, prevProject, nextProject, ...props } = Astro.props;
 ---
 
+<style>
+	.sticky-title {
+		position: sticky;
+		top: 2rem;
+		z-index: 50;
+	}
+</style>
+
 <Layout {...props} hideFooter={true}>
 	<div
 		class="project-page"
@@ -34,7 +42,7 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 					<div class="absolute inset-0 bg-black"></div>
 				</div>
 				<h1
-					class="text-4xl sm:text-5xl text-center whitespace-nowrap font-display"
+					class="text-4xl sm:text-5xl text-center whitespace-nowrap font-display sticky-title"
 					id="projectTitle"
 				>
 					{project.data.title}
@@ -180,6 +188,86 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 
 		// Register ScrollTrigger plugin
 		gsap.registerPlugin(ScrollTrigger);
+
+		// Custom sticky behavior
+		if (projectTitle) {
+			let titleOriginalPosition = null;
+			let titleOriginalRect: DOMRect | null = null;
+
+			// Get the original position of the title
+			function saveOriginalPosition() {
+				if (!projectTitle) return;
+
+				titleOriginalPosition = projectTitle.getBoundingClientRect();
+				titleOriginalRect = {
+					top: window.scrollY + titleOriginalPosition.top,
+					left: titleOriginalPosition.left,
+					width: titleOriginalPosition.width,
+					height: titleOriginalPosition.height,
+					x: titleOriginalPosition.x,
+				};
+			}
+
+			saveOriginalPosition();
+
+			// Function to handle scroll
+			function handleScroll() {
+				if (!titleOriginalRect || !projectTitle) return;
+
+				const scrollTop = window.scrollY;
+				const topThreshold = titleOriginalRect.top - 32; // 2rem (32px)
+
+				// Calculate how close we are to the threshold for scaling
+				const distanceToThreshold =
+					titleOriginalRect.top - (scrollTop + 32);
+				// Only start scaling when we're closer to the top (last 30% of distance)
+				const maxDistance = window.innerHeight / 3;
+				const linearProgress = Math.max(
+					0,
+					Math.min(1, 1 - distanceToThreshold / maxDistance),
+				);
+
+				// Apply cubic easing (similar to Power3.out)
+				const progress =
+					linearProgress * linearProgress * (3 - 2 * linearProgress);
+
+				// Scale from 1 to 0.4 based on scroll progress
+				const scale = 1 - 0.6 * progress;
+
+				if (scrollTop > topThreshold) {
+					// Title should be fixed
+					if (projectTitle.style.position !== "fixed") {
+						projectTitle.style.position = "fixed";
+						projectTitle.style.top = "2rem";
+						projectTitle.style.left = "50%";
+						projectTitle.style.transform = `translateX(-50%) scale(${scale})`;
+						projectTitle.style.zIndex = "50";
+					} else {
+						// Just update the scale if already fixed
+						projectTitle.style.transform = `translateX(-50%) scale(${scale})`;
+					}
+				} else {
+					// Reset position but animate scale
+					projectTitle.style.position = "";
+					projectTitle.style.top = "";
+					projectTitle.style.left = "";
+					projectTitle.style.transform = `scale(${scale})`;
+					projectTitle.style.zIndex = "50";
+				}
+			}
+
+			// Attach scroll event
+			window.addEventListener("scroll", handleScroll);
+
+			// Update on window resize
+			window.addEventListener("resize", () => {
+				saveOriginalPosition();
+				handleScroll();
+			});
+
+			// Initial check
+			handleScroll();
+		}
 
 		// Footer animation and navigation
 		if (projectFooter) {
