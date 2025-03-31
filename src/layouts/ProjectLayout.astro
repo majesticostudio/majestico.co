@@ -58,7 +58,7 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 				class="sm:hidden flex flex-col items-center w-full gap-20 xl:gap-40 max-w-[24rem]"
 			>
 				<h1
-					class="text-4xl text-center font-display"
+					class="text-4xl text-center font-display sticky-title"
 					id="projectTitleMobile"
 				>
 					{project.data.title}
@@ -189,16 +189,18 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 		// Register ScrollTrigger plugin
 		gsap.registerPlugin(ScrollTrigger);
 
-		// Custom sticky behavior
-		if (projectTitle) {
+		// Function to apply sticky behavior to a title element
+		function applyStickyBehavior(titleElement) {
+			if (!titleElement) return;
+
 			let titleOriginalPosition = null;
-			let titleOriginalRect: DOMRect | null = null;
+			let titleOriginalRect = null;
 
 			// Get the original position of the title
 			function saveOriginalPosition() {
-				if (!projectTitle) return;
+				if (!titleElement) return;
 
-				titleOriginalPosition = projectTitle.getBoundingClientRect();
+				titleOriginalPosition = titleElement.getBoundingClientRect();
 				titleOriginalRect = {
 					top: window.scrollY + titleOriginalPosition.top,
 					left: titleOriginalPosition.left,
@@ -212,16 +214,16 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 
 			// Function to handle scroll
 			function handleScroll() {
-				if (!titleOriginalRect || !projectTitle) return;
+				if (!titleOriginalRect || !titleElement) return;
 
 				const scrollTop = window.scrollY;
-				const topThreshold = titleOriginalRect.top - 32; // 2rem (32px)
+				const topThreshold = titleOriginalRect.top - 16; // 1rem (16px)
 
 				// Calculate how close we are to the threshold for scaling
 				const distanceToThreshold =
-					titleOriginalRect.top - (scrollTop + 32);
-				// Only start scaling when we're closer to the top (last 30% of distance)
-				const maxDistance = window.innerHeight / 3;
+					titleOriginalRect.top - (scrollTop + 16);
+				// Only start scaling when we're closer to the top (last 20% of distance)
+				const maxDistance = window.innerHeight / 5;
 				const linearProgress = Math.max(
 					0,
 					Math.min(1, 1 - distanceToThreshold / maxDistance),
@@ -231,28 +233,28 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 				const progress =
 					linearProgress * linearProgress * (3 - 2 * linearProgress);
 
-				// Scale from 1 to 0.4 based on scroll progress
-				const scale = 1 - 0.6 * progress;
+				// Scale from 1 to 0.3 based on scroll progress
+				const scale = 1 - 0.7 * progress;
 
 				if (scrollTop > topThreshold) {
 					// Title should be fixed
-					if (projectTitle.style.position !== "fixed") {
-						projectTitle.style.position = "fixed";
-						projectTitle.style.top = "2rem";
-						projectTitle.style.left = "50%";
-						projectTitle.style.transform = `translateX(-50%) scale(${scale})`;
-						projectTitle.style.zIndex = "50";
+					if (titleElement.style.position !== "fixed") {
+						titleElement.style.position = "fixed";
+						titleElement.style.top = "1rem";
+						titleElement.style.left = "50%";
+						titleElement.style.transform = `translateX(-50%) scale(${scale})`;
+						titleElement.style.zIndex = "50";
 					} else {
 						// Just update the scale if already fixed
-						projectTitle.style.transform = `translateX(-50%) scale(${scale})`;
+						titleElement.style.transform = `translateX(-50%) scale(${scale})`;
 					}
 				} else {
 					// Reset position but animate scale
-					projectTitle.style.position = "";
-					projectTitle.style.top = "";
-					projectTitle.style.left = "";
-					projectTitle.style.transform = `scale(${scale})`;
-					projectTitle.style.zIndex = "50";
+					titleElement.style.position = "";
+					titleElement.style.top = "";
+					titleElement.style.left = "";
+					titleElement.style.transform = `scale(${scale})`;
+					titleElement.style.zIndex = "50";
 				}
 			}
 
@@ -268,6 +270,10 @@ const { project, prevProject, nextProject, ...props } = Astro.props;
 			// Initial check
 			handleScroll();
 		}
+
+		// Apply sticky behavior to both desktop and mobile titles
+		applyStickyBehavior(projectTitle);
+		applyStickyBehavior(document.getElementById("projectTitleMobile"));
 
 		// Footer animation and navigation
 		if (projectFooter) {
