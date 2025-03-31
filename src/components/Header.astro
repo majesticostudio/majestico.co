@@ -11,13 +11,10 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 ---
 
 <header
-	class="fixed p-2 lg:p-4 top-0 right-0 left-0 z-20 max-w-[40rem]"
+	class="fixed p-2 md:p-4 top-0 right-0 left-0 z-20 max-w-[40rem]"
 	transition:persist="header"
 >
-	<nav
-		id="header-nav"
-		class="w-12 h-12 flex flex-col bg-black overflow-hidden"
-	>
+	<nav id="header-nav" class="w-12 h-12 flex flex-col overflow-hidden">
 		<button
 			id="menu-button"
 			class="w-12 h-12 min-h-12 cursor-pointer flex items-center justify-center"
@@ -84,6 +81,9 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 	#header-nav {
 		position: relative;
 		transition: background-color 0.3s;
+		-webkit-backdrop-filter: blur(50px);
+		backdrop-filter: blur(50px);
+		background-color: rgb(0 0 0 / 80%);
 	}
 
 	.menu-item,
@@ -118,6 +118,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 			const contactItems = document.querySelectorAll(".contact-item");
 			const socialItems = document.querySelectorAll(".social-item");
 			let isOpen = false;
+			let isAnimating = false;
 
 			// Opening animation
 			const openAnimation = gsap
@@ -134,7 +135,13 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 				})
 				.to(headerNav, {
 					width: "100%",
-					height: "calc(100vh - 2rem)",
+					height: () => {
+						if (window.matchMedia("(min-width: 768px)").matches) {
+							return "calc(100vh - 2rem)";
+						} else {
+							return "calc(100vh - 1rem)";
+						}
+					},
 				})
 				.from(
 					menuItems,
@@ -145,7 +152,10 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 						duration: 0.6,
 					},
 					"<=+0.2",
-				);
+				)
+				.call(() => {
+					isAnimating = false;
+				});
 
 			// Closing animation
 			const closeAnimation = gsap
@@ -171,17 +181,19 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 					},
 					"<",
 				)
-				.to(
-					menuContent,
-					{
-						opacity: 0,
-						pointerEvents: "none",
-					},
-					"<=+0.1",
-				);
+				.set(menuContent, {
+					opacity: 0,
+					pointerEvents: "none",
+				})
+				.call(() => {
+					isAnimating = false;
+				});
 
 			// Handle menu toggle
 			const toggleMenu = () => {
+				if (isAnimating) return;
+
+				isAnimating = true;
 				if (isOpen) {
 					openAnimation.pause();
 					closeAnimation.play(0);
@@ -196,7 +208,8 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 			if (window.matchMedia("(min-width: 768px)").matches) {
 				// Open on hover
 				headerNav?.addEventListener("mouseenter", () => {
-					if (!isOpen) {
+					if (!isOpen && !isAnimating) {
+						isAnimating = true;
 						closeAnimation.pause(0);
 						openAnimation.play(0);
 						isOpen = true;
@@ -206,6 +219,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 				// Close on mouseleave
 				headerNav?.addEventListener("mouseleave", () => {
 					if (isOpen) {
+						isAnimating = true;
 						openAnimation.pause();
 						closeAnimation.play(0);
 						isOpen = false;
