@@ -10,7 +10,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 );
 ---
 
-<header class="fixed p-2 lg:p-4 top-0 right-0 left-0 z-20 max-w-[30rem]">
+<header class="fixed p-2 lg:p-4 top-0 right-0 left-0 z-20 max-w-[40rem]">
 	<nav
 		id="header-nav"
 		class="w-12 h-12 flex flex-col bg-black overflow-hidden"
@@ -90,10 +90,10 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 	const openAnimation = gsap
 		.timeline({
 			paused: true,
-			defaults: { duration: 0.8, ease: "expo.out" },
+			defaults: { duration: 0.8, ease: "power4.out" },
 		})
 		.set(headerNav, {
-			maxWidth: "30rem",
+			maxWidth: "40rem",
 		})
 		.set(menuContent, {
 			opacity: 1,
@@ -118,13 +118,16 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 	const closeAnimation = gsap
 		.timeline({
 			paused: true,
-			defaults: { duration: 0.8, ease: "expo.out" },
+			defaults: { duration: 0.8, ease: "power4.out" },
 		})
 		// Reset menu items, contacts, and socials
 		.to([menuItems, contactItems, socialItems], {
 			opacity: 0,
 			x: -80,
-			stagger: 0.05,
+			stagger: {
+				from: "end",
+				amount: 0.05,
+			},
 			duration: 0.3,
 		})
 		.to(
