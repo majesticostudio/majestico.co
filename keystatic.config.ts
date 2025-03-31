@@ -250,12 +250,54 @@ export default config({
 					directory: "src/assets/header",
 					publicPath: "/src/assets/header/",
 				}),
-				actLogo: fields.image({
-					label: "ACT Logo",
-					description: "The ACT logo in the right side of the header",
-					directory: "src/assets/header",
-					publicPath: "/src/assets/header/",
-				}),
+				menuItems: fields.array(
+					fields.object({
+						label: fields.text({
+							label: "Menu Item Label",
+							validation: { isRequired: true },
+						}),
+						href: fields.url({
+							label: "Menu Item URL",
+							validation: { isRequired: true },
+						}),
+					}),
+					{
+						label: "Menu Items",
+						itemLabel: (props) => props.fields?.label?.value || "Menu Item",
+					},
+				),
+				contacts: fields.array(
+					fields.object({
+						label: fields.text({
+							label: "Contact Label",
+							validation: { isRequired: true },
+						}),
+						href: fields.url({
+							label: "Contact URL",
+							validation: { isRequired: true },
+						}),
+					}),
+					{
+						label: "Contacts",
+						itemLabel: (props) => props.fields?.label?.value || "Contact",
+					},
+				),
+				socials: fields.array(
+					fields.object({
+						label: fields.text({
+							label: "Social Label",
+							validation: { isRequired: true },
+						}),
+						href: fields.url({
+							label: "Social URL",
+							validation: { isRequired: true },
+						}),
+					}),
+					{
+						label: "Socials",
+						itemLabel: (props) => props.fields?.label?.value || "Social",
+					},
+				),
 			},
 		},
 		footer: {

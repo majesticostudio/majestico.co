@@ -1,4 +1,37 @@
 {
-  "logo": "/src/assets/header/logo.svg",
-  "actLogo": "/src/assets/header/actLogo.svg"
+	"logo": "/src/assets/header/logo.svg",
+	"menuItems": [
+		{
+			"label": "Home",
+			"href": "/"
+		},
+		{
+			"label": "All Projects",
+			"href": "/projects"
+		},
+		{
+			"label": "About",
+			"href": "/about"
+		},
+		{
+			"label": "Contact",
+			"href": "/contact"
+		}
+	],
+	"contacts": [
+		{
+			"label": "Email",
+			"href": "mailto:info@majestico.it"
+		}
+	],
+	"socials": [
+		{
+			"label": "Instagram",
+			"href": "https://www.instagram.com/majestico.it"
+		},
+		{
+			"label": "Facebook",
+			"href": "https://www.facebook.com/majestico.it"
+		}
+	]
 }

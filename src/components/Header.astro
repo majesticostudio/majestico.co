@@ -1,4 +1,7 @@
 ---
+// https://www.youtube.com/watch?v=QG8x_l3sGSc&list=PL8bX3D8aBEpl6UHVuum_WYYfWHsiY5Liw&index=30
+// https://www.youtube.com/watch?v=l59wLe1paos&list=PL8bX3D8aBEpl6UHVuum_WYYfWHsiY5Liw&index=24
+
 import { Image } from "astro:assets";
 import headerConfig from "@/data/singletons/header.json";
 
@@ -7,29 +10,126 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 );
 ---
 
-<header class="absolute top-0 left-0 right-0 z-50">
-	<nav class="flex justify-between items-center px-5 lg:px-12 py-8">
-		<a href="/">
-			{
-				headerConfig.logo && (
-					<Image
-						src={images[headerConfig.logo]()}
-						alt="Logo"
-						class="w-14"
-					/>
-				)
-			}
-		</a>
-		<div>
-			{
-				headerConfig.actLogo && (
-					<Image
-						src={images[headerConfig.actLogo]()}
-						alt="ACT"
-						class="w-16"
-					/>
-				)
-			}
+<header
+	class="fixed p-4 top-0 right-0 left-0 z-20 max-w-[30rem]"
+	data-menu-items={JSON.stringify(headerConfig.menuItems)}
+	data-contacts={JSON.stringify(headerConfig.contacts)}
+>
+	<nav
+		id="header-nav"
+		class="w-12 h-12 bg-black cursor-pointer overflow-hidden"
+	>
+		<div class="absolute top-2 left-3">
+			<div class="text-white text-2xl font-bold">M</div>
+		</div>
+		<div
+			id="menu-content"
+			class="opacity-0 pointer-events-none flex items-center justify-center"
+		>
+			<!-- Menu content -->
+			<div class="text-white text-4xl">Menu Content Here</div>
 		</div>
 	</nav>
 </header>
+
+<script>
+	import { gsap } from "gsap";
+
+	const headerNav = document.querySelector("#header-nav");
+	const menuContent = document.querySelector("#menu-content");
+	let isOpen = false;
+
+	// Opening animation
+	const openAnimation = gsap
+		.timeline({
+			paused: true,
+			defaults: { duration: 0.8, ease: "expo.out" },
+		})
+		.set(headerNav, {
+			maxWidth: "30rem",
+		})
+		.to(headerNav, {
+			width: "100%",
+			height: "calc(100vh - 2rem)",
+			borderRadius: 0,
+		})
+		.to(
+			menuContent,
+			{
+				opacity: 1,
+				pointerEvents: "auto",
+				display: "flex",
+				width: "100%",
+				height: "100%",
+				position: "absolute",
+				top: 0,
+				left: 0,
+			},
+			"-=0.4",
+		);
+
+	// Closing animation (same easing)
+	const closeAnimation = gsap
+		.timeline({
+			paused: true,
+			defaults: { duration: 0.8, ease: "expo.out" },
+		})
+		.to(menuContent, {
+			opacity: 0,
+			pointerEvents: "none",
+		})
+		.to(
+			headerNav,
+			{
+				width: "3rem", // 12px in tailwind
+				height: "3rem",
+				onComplete: () => {
+					gsap.set(menuContent, { display: "none" });
+				},
+			},
+			"-=0.6",
+		);
+
+	// For desktop
+	if (window.matchMedia("(min-width: 768px)").matches) {
+		headerNav?.addEventListener("mouseenter", () => {
+			if (!isOpen) {
+				closeAnimation.pause(0);
+				openAnimation.play(0);
+				isOpen = true;
+			}
+		});
+
+		headerNav?.addEventListener("mouseleave", () => {
+			if (isOpen) {
+				openAnimation.pause();
+				closeAnimation.play(0);
+				isOpen = false;
+			}
+		});
+	}
+	// For mobile
+	else {
+		headerNav?.addEventListener("click", () => {
+			if (isOpen) {
+				openAnimation.pause();
+				closeAnimation.play(0);
+			} else {
+				closeAnimation.pause(0);
+				openAnimation.play(0);
+			}
+			isOpen = !isOpen;
+		});
+	}
+</script>
+
+<style>
+	#header-nav {
+		position: relative;
+		transition: background-color 0.3s;
+	}
+
+	#menu-content {
+		display: none;
+	}
+</style>
