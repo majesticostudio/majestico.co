@@ -128,6 +128,10 @@
 					trigger: $textEl, // Trigger the animation when the text enters the viewport
 					start: "center bottom",
 				},
+				onComplete: () => {
+					// Remove the filter after animation completes
+					$textEl.style.filter = "none";
+				},
 			})
 			.to(
 				primitiveValues,
@@ -154,6 +158,8 @@
 		// Add click event listener to the replay button
 		if (replayButton && replayButton.classList.contains("replay")) {
 			replayButton.addEventListener("click", () => {
+				// Apply the filter again before restarting
+				$textEl.style.filter = `url(#${filterId})`;
 				// Restart the timeline when the button is clicked
 				animationTimeline.restart();
 			});
@@ -301,6 +307,9 @@
 				);
 
 				if (feBlur) {
+					// Apply the filter before starting animation
+					titleElement.style.filter = `url(#${filterId})`;
+
 					// Create a timeline for the morphing effect
 					const tl = gsap.timeline();
 
@@ -336,6 +345,10 @@
 										"stdDeviation",
 										this.targets()[0].stdDeviation.toString(),
 									);
+								},
+								onComplete: function () {
+									// Remove the filter after animation is complete
+									titleElement.style.filter = "none";
 								},
 							},
 							"<=+0.5",

@@ -5,25 +5,9 @@
 @font-face {
 	font-family: "SangBleu";
 	font-style: normal;
-	font-weight: 100;
-	font-display: swap;
-	src: url("/fonts/SangBleu/SangBleuKingdom-Air-WebS.woff2") format("woff2");
-}
-
-@font-face {
-	font-family: "SangBleu";
-	font-style: normal;
-	font-weight: 200;
-	font-display: swap;
-	src: url("/fonts/SangBleu/SangBleuKingdom-Light-WebS.woff2") format("woff2");
-}
-
-@font-face {
-	font-family: "SangBleu";
-	font-style: normal;
 	font-weight: 400;
 	font-display: swap;
-	src: url("/fonts/SangBleu/SangBleuKingdom-Regular-WebS.woff2") format("woff2");
+	src: url("/fonts/SangBleu/SangBleuEmpire-Regular-WebS.woff2") format("woff2");
 }
 
 @font-face {
@@ -31,7 +15,7 @@
 	font-style: normal;
 	font-weight: 600;
 	font-display: swap;
-	src: url("/fonts/SangBleu/SangBleuKingdom-Medium-WebS.woff2") format("woff2");
+	src: url("/fonts/SangBleu/SangBleuEmpire-Medium-WebS.woff2") format("woff2");
 }
 
 @font-face {
@@ -39,7 +23,15 @@
 	font-style: normal;
 	font-weight: 800;
 	font-display: swap;
-	src: url("/fonts/SangBleu/SangBleuKingdom-Bold-WebS.woff2") format("woff2");
+	src: url("/fonts/SangBleu/SangBleuEmpire-Bold-WebS.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "SangBleu";
+	font-style: normal;
+	font-weight: 900;
+	font-display: swap;
+	src: url("/fonts/SangBleu/SangBleuEmpire-Black-WebS.woff2") format("woff2");
 }
 
 /* EuclidSquare */
