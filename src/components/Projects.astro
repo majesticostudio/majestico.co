@@ -1,5 +1,6 @@
 ---
 // https://codrops.com/Tutorials/InfiniteAutoScrollingGallery/index.html
+// https://gsap.com/community/forums/topic/36296-cursor-animation/
 ---
 
 <div class="content">
@@ -31,10 +32,18 @@
 		</defs>
 	</svg>
 
-	<section class="section" data-project-title="Majestico"></section>
-	<section class="section" data-project-title="Overthewildborders"></section>
-	<section class="section" data-project-title="Inserta"></section>
-	<section class="section" data-project-title="Wave"></section>
+	<section class="section" data-project-title="Majestico">
+		<a href="/projects/majestico"></a>
+	</section>
+	<section class="section" data-project-title="Overthewildborders">
+		<a href="/projects/overthewildborders"></a>
+	</section>
+	<section class="section" data-project-title="Inserta">
+		<a href="/projects/inserta"></a>
+	</section>
+	<section class="section" data-project-title="Wave">
+		<a href="/projects/wave"></a>
+	</section>
 </div>
 
 <style>
@@ -47,7 +56,20 @@
 
 	.section {
 		height: 100vh;
+		display: block;
 		position: relative;
+	}
+
+	.section a {
+		cursor: pointer;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 100%;
+		height: 100%;
+		max-width: 60rem;
+		max-height: 40rem;
 	}
 	#project-title {
 		mix-blend-mode: soft-light;
@@ -183,200 +205,204 @@
 		return mesh;
 	}
 
-	/**
-	 * Setup
-	 */
-	const canvas = document.querySelector("canvas.webgl") as HTMLCanvasElement;
-	const scene = new THREE.Scene();
+	document.addEventListener("astro:page-load", () => {
+		/**
+		 * Setup
+		 */
+		const canvas = document.querySelector(
+			"canvas.webgl",
+		) as HTMLCanvasElement;
+		const scene = new THREE.Scene();
 
-	const titleElement = document.getElementById(
-		"project-title",
-	) as HTMLElement;
-	morphText(titleElement);
+		const titleElement = document.getElementById(
+			"project-title",
+		) as HTMLElement;
+		morphText(titleElement);
 
-	const sizes = {
-		width: window.innerWidth,
-		height: window.innerHeight,
-	};
+		const sizes = {
+			width: window.innerWidth,
+			height: window.innerHeight,
+		};
 
-	window.addEventListener("resize", () => {
-		sizes.width = window.innerWidth;
-		sizes.height = window.innerHeight;
-		camera.aspect = sizes.width / sizes.height;
-		camera.updateProjectionMatrix();
+		window.addEventListener("resize", () => {
+			sizes.width = window.innerWidth;
+			sizes.height = window.innerHeight;
+			camera.aspect = sizes.width / sizes.height;
+			camera.updateProjectionMatrix();
+			renderer.setSize(sizes.width, sizes.height);
+			renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+		});
+
+		const camera = new THREE.PerspectiveCamera(
+			35,
+			sizes.width / sizes.height,
+			0.1,
+			2000,
+		);
+		camera.position.set(0, 0, 1600);
+		scene.add(camera);
+
+		const renderer = new THREE.WebGLRenderer({
+			canvas: canvas,
+			alpha: true,
+		});
 		renderer.setSize(sizes.width, sizes.height);
 		renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-	});
 
-	const camera = new THREE.PerspectiveCamera(
-		35,
-		sizes.width / sizes.height,
-		0.1,
-		2000,
-	);
-	camera.position.set(0, 0, 1600);
-	scene.add(camera);
+		/**
+		 * Objects
+		 */
+		const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+		const objectsDistance = sizes.height;
 
-	const renderer = new THREE.WebGLRenderer({
-		canvas: canvas,
-		alpha: true,
-	});
-	renderer.setSize(sizes.width, sizes.height);
-	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+		const mesh1 = MeshItem(1000, 667);
+		const mesh2 = MeshItem(450, 581);
+		const mesh3 = MeshItem(553, 600);
+		const mesh4 = MeshItem(600, 600);
 
-	/**
-	 * Objects
-	 */
-	const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-	const objectsDistance = sizes.height;
-
-	const mesh1 = MeshItem(1000, 667);
-	const mesh2 = MeshItem(450, 581);
-	const mesh3 = MeshItem(553, 600);
-	const mesh4 = MeshItem(600, 600);
-
-	const sectionMeshes = [mesh1, mesh2, mesh3, mesh4];
-
-	for (let i = 0; i < sectionMeshes.length; i++) {
-		sectionMeshes[i].position.y = -objectsDistance * i;
-	}
-
-	scene.add(mesh1, mesh2, mesh3, mesh4);
-
-	const loader = new Loader();
-	loader.loadTextures((textures: any[]) => {
-		document.body.classList.remove("loading");
+		const sectionMeshes = [mesh1, mesh2, mesh3, mesh4];
 
 		for (let i = 0; i < sectionMeshes.length; i++) {
-			sectionMeshes[i].material.uniforms.uTexture.value = textures[i];
+			sectionMeshes[i].position.y = -objectsDistance * i;
 		}
 
-		observeScroll();
-		const section = Math.round(scrollY / sizes.height);
-		onSectionEnter(section);
-		tick();
-	});
+		scene.add(mesh1, mesh2, mesh3, mesh4);
 
-	/**
-	 * Scroll
-	 */
-	let scrollY = window.scrollY;
-	let currentSection = -1;
-	const sectionElements = document.querySelectorAll(
-		".section[data-project-title]",
-	);
-	const sectionTitles = Array.from(sectionElements).map((el) =>
-		el.getAttribute("data-project-title"),
-	);
+		const loader = new Loader();
+		loader.loadTextures((textures: any[]) => {
+			document.body.classList.remove("loading");
 
-	// shift
-	let shift = 0;
-
-	const observeScroll = () => {
-		window.addEventListener("scroll", () => {
-			scrollY = window.scrollY;
-
-			let newSection = scrollY / sizes.height;
-			newSection = Math.round(newSection);
-
-			if (currentSection != newSection) {
-				shift += newSection - currentSection;
-				currentSection = newSection;
-				onSectionEnter(newSection);
+			for (let i = 0; i < sectionMeshes.length; i++) {
+				sectionMeshes[i].material.uniforms.uTexture.value = textures[i];
 			}
+
+			observeScroll();
+			const section = Math.round(scrollY / sizes.height);
+			onSectionEnter(section);
+			tick();
 		});
-	};
 
-	const onSectionEnter = (section: number) => {
-		// Ensure section is within bounds
-		if (section >= 0 && section < sectionMeshes.length) {
-			// Animate the 3D mesh
-			gsap.to(sectionMeshes[section].material.uniforms.uProgress, {
-				duration: 3.0,
-				value: 1.0,
+		/**
+		 * Scroll
+		 */
+		let scrollY = window.scrollY;
+		let currentSection = -1;
+		const sectionElements = document.querySelectorAll(
+			".section[data-project-title]",
+		);
+		const sectionTitles = Array.from(sectionElements).map((el) =>
+			el.getAttribute("data-project-title"),
+		);
+
+		// shift
+		let shift = 0;
+
+		const observeScroll = () => {
+			window.addEventListener("scroll", () => {
+				scrollY = window.scrollY;
+
+				let newSection = scrollY / sizes.height;
+				newSection = Math.round(newSection);
+
+				if (currentSection != newSection) {
+					shift += newSection - currentSection;
+					currentSection = newSection;
+					onSectionEnter(newSection);
+				}
 			});
+		};
 
-			// Get the title of the current section
-			if (section < sectionTitles.length && titleElement) {
-				const newTitle = sectionTitles[section];
+		const onSectionEnter = (section: number) => {
+			// Ensure section is within bounds
+			if (section >= 0 && section < sectionMeshes.length) {
+				// Animate the 3D mesh
+				gsap.to(sectionMeshes[section].material.uniforms.uProgress, {
+					duration: 3.0,
+					value: 1.0,
+				});
 
-				// Get the filter ID from the element's data attribute
-				const filterId = titleElement.getAttribute("data-filter");
-				const feBlur = document.querySelector(
-					`#${filterId} feGaussianBlur`,
-				);
+				// Get the title of the current section
+				if (section < sectionTitles.length && titleElement) {
+					const newTitle = sectionTitles[section];
 
-				if (feBlur) {
-					// Apply the filter before starting animation
-					titleElement.style.filter = `url(#${filterId})`;
+					// Get the filter ID from the element's data attribute
+					const filterId = titleElement.getAttribute("data-filter");
+					const feBlur = document.querySelector(
+						`#${filterId} feGaussianBlur`,
+					);
 
-					// Create a timeline for the morphing effect
-					const tl = gsap.timeline();
+					if (feBlur) {
+						// Apply the filter before starting animation
+						titleElement.style.filter = `url(#${filterId})`;
 
-					// Phase 1: Quick blur out the current text
-					tl.to(
-						{ stdDeviation: 0 },
-						{
-							stdDeviation: 20,
-							duration: 1,
-							ease: "power1.in",
-							onUpdate: function () {
-								feBlur.setAttribute(
-									"stdDeviation",
-									this.targets()[0].stdDeviation.toString(),
-								);
-							},
-							// When fully blurred, change the text content
-							onComplete: () => {
-								titleElement.textContent = newTitle;
-							},
-						},
-					)
+						// Create a timeline for the morphing effect
+						const tl = gsap.timeline();
 
-						// Phase 2: Quick blur in the new text
-						.to(
-							{ stdDeviation: 20 },
+						// Phase 1: Quick blur out the current text
+						tl.to(
+							{ stdDeviation: 0 },
 							{
-								stdDeviation: 0,
+								stdDeviation: 20,
 								duration: 1,
-								ease: "power1.out",
+								ease: "power1.in",
 								onUpdate: function () {
 									feBlur.setAttribute(
 										"stdDeviation",
 										this.targets()[0].stdDeviation.toString(),
 									);
 								},
-								onComplete: function () {
-									// Remove the filter after animation is complete
-									titleElement.style.filter = "none";
+								// When fully blurred, change the text content
+								onComplete: () => {
+									titleElement.textContent = newTitle;
 								},
 							},
-							"<=+0.5",
-						);
+						)
+
+							// Phase 2: Quick blur in the new text
+							.to(
+								{ stdDeviation: 20 },
+								{
+									stdDeviation: 0,
+									duration: 1,
+									ease: "power1.out",
+									onUpdate: function () {
+										feBlur.setAttribute(
+											"stdDeviation",
+											this.targets()[0].stdDeviation.toString(),
+										);
+									},
+									onComplete: function () {
+										// Remove the filter after animation is complete
+										titleElement.style.filter = "none";
+									},
+								},
+								"<=+0.5",
+							);
+					}
 				}
 			}
-		}
-	};
+		};
 
-	/**
-	 * Tick
-	 */
-	const clock = new THREE.Clock();
-	let time = 0;
-	let targetPosY = -scrollY;
+		/**
+		 * Tick
+		 */
+		const clock = new THREE.Clock();
+		let time = 0;
+		let targetPosY = -scrollY;
 
-	const lerp = (a: number, b: number, t: number) => {
-		return a + (b - a) * t;
-	};
+		const lerp = (a: number, b: number, t: number) => {
+			return a + (b - a) * t;
+		};
 
-	const tick = () => {
-		const elapsedTime = clock.getElapsedTime();
-		const deltaTime = elapsedTime - time;
-		time = elapsedTime;
+		const tick = () => {
+			const elapsedTime = clock.getElapsedTime();
+			const deltaTime = elapsedTime - time;
+			time = elapsedTime;
 
-		targetPosY = lerp(targetPosY, -scrollY, 0.1);
-		camera.position.y = targetPosY;
-		renderer.render(scene, camera);
-		window.requestAnimationFrame(tick);
-	};
+			targetPosY = lerp(targetPosY, -scrollY, 0.1);
+			camera.position.y = targetPosY;
+			renderer.render(scene, camera);
+			window.requestAnimationFrame(tick);
+		};
+	});
 </script>

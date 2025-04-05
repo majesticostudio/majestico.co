@@ -2,12 +2,8 @@
 	"logo": "/src/assets/header/logo.svg",
 	"menuItems": [
 		{
-			"label": "Home",
+			"label": "Projects",
 			"href": "/"
-		},
-		{
-			"label": "All Projects",
-			"href": "/projects"
 		},
 		{
 			"label": "About",

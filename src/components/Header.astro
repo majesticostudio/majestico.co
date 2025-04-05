@@ -11,7 +11,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 ---
 
 <header
-	class="fixed p-2 md:p-4 top-0 right-0 left-0 z-20 max-w-[40rem]"
+	class="fixed p-2 md:p-4 top-0 right-0 left-0 z-20 max-w-[30rem]"
 	transition:persist="header"
 >
 	<nav id="header-nav" class="w-12 h-12 flex flex-col overflow-hidden">
@@ -34,7 +34,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 					headerConfig.menuItems.map((item) => (
 						<a
 							href={item.href}
-							class="menu-item font-display text-white text-4xl mb-4"
+							class="menu-item font-display font-light text-white text-5xl mb-4"
 							data-menu-item
 						>
 							{item.label}

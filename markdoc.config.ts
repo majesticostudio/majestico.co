@@ -21,5 +21,11 @@ export default defineMarkdocConfig({
 			},
 			render: component("./src/components/Projects.astro"),
 		},
+		Contact: {
+			attributes: {
+				email: { type: String },
+			},
+			render: component("./src/components/Contact.astro"),
+		},
 	},
 });

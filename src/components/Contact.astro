@@ -1,0 +1,11 @@
+---
+const { email } = Astro.props;
+---
+
+<div class="section">
+	<div class="container">
+		<a class="text-8xl font-display font-light" href={`mailto:${email}`}>
+			{email}
+		</a>
+	</div>
+</div>
