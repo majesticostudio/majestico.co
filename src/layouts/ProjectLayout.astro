@@ -176,8 +176,9 @@ const projectRomanNumeral = project.data.order
 <style>
 	[data-expand-on-scroll] {
 		--negative-margin: calc(15 * var(--svh, 1svh));
-		--anim-progress: 1;
+		--anim-progress: 0;
 		--scroll-progress: 0;
+		--parallax-progress: -200px;
 		clip-path: inset(
 			calc(
 					(1 - var(--anim-progress, 1)) * var(--negative-margin) +
@@ -193,6 +194,9 @@ const projectRomanNumeral = project.data.order
 						(1 - var(--scroll-progress, 1)) * 30%
 				)
 		);
+	}
+	[data-expand-on-scroll] img {
+		transform: translate3d(0px, var(--parallax-progress), 0px);
 	}
 </style>
 
@@ -372,37 +376,46 @@ const projectRomanNumeral = project.data.order
 		}
 
 		// Image expand on scroll
-		const imageExpandOnScroll = document.querySelectorAll(
+		const sectionExpandOnScroll = document.querySelectorAll(
 			"[data-expand-on-scroll]",
 		);
-		imageExpandOnScroll.forEach((image) => {
-			const imageElement = image as HTMLElement;
+		sectionExpandOnScroll.forEach((section) => {
+			const sectionElement = section as HTMLElement;
+			const imageElement = sectionElement.querySelector("img");
 			// Set initial state
-			imageElement.style.setProperty("--anim-progress", "0");
-			imageElement.style.setProperty(
+			sectionElement.style.setProperty("--anim-progress", "0");
+			sectionElement.style.setProperty(
 				"--scroll-progress",
 				window.innerWidth < 768 ? "0.8" : "0",
 			);
 
-			// Initial animation
-			gsap.to(imageElement, {
-				"--anim-progress": "1",
-				duration: 1.2,
+			gsap.to(sectionElement, {
 				ease: "power2.out",
-				onComplete: () => {
-					// After initial animation, set up scroll animation
-					gsap.to(imageElement, {
-						scrollTrigger: {
-							trigger: imageElement,
-							start: "top 80%",
-							end: "center center",
-							scrub: 0.8,
-							markers: true,
-						},
-						ease: "none",
-						"--scroll-progress": "1",
-					});
+				duration: 1,
+				"--anim-progress": "1",
+			});
+			// After initial animation, set up scroll animation
+			gsap.to(sectionElement, {
+				scrollTrigger: {
+					trigger: sectionElement,
+					start: "top 80%",
+					end: "center center",
+					scrub: 0.8,
 				},
+				ease: "none",
+				"--scroll-progress": "1",
+			});
+
+			// Add parallax effect
+			gsap.to(imageElement, {
+				scrollTrigger: {
+					trigger: sectionElement,
+					start: "top 80%",
+					end: "bottom top",
+					scrub: true,
+				},
+				"--parallax-progress": window.innerWidth < 768 ? 500 : 600,
+				ease: "none",
 			});
 		});
 	});
