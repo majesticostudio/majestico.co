@@ -38,6 +38,15 @@ export const components: Record<string, ContentComponent> = {
 			),
 		},
 	}),
+	Contact: block({
+		label: "Contact",
+		schema: {
+			email: fields.text({
+				label: "Email Address",
+				validation: { isRequired: true },
+			}),
+		},
+	}),
 };
 
 export default config({
