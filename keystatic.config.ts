@@ -47,6 +47,15 @@ export const components: Record<string, ContentComponent> = {
 			}),
 		},
 	}),
+	HeroTitle: block({
+		label: "Hero Title",
+		schema: {
+			title: fields.text({
+				label: "Title",
+				validation: { isRequired: true },
+			}),
+		},
+	}),
 };
 
 export default config({
@@ -148,6 +157,77 @@ export default config({
 						description: "Optimize the page for search engines",
 					},
 				),
+				content: fields.markdoc({
+					label: "Content",
+					components: components,
+				}),
+			},
+		}),
+		projects: collection({
+			label: "Projects",
+			slugField: "title",
+			path: "src/data/collections/projects/*",
+			previewUrl: "/projects/{slug}",
+			columns: ["title", "order", "featured", "createdAt", "lastUpdatedAt"],
+			format: { contentField: "content" },
+			schema: {
+				title: fields.slug({
+					name: {
+						label: "Title",
+						validation: {
+							isRequired: true,
+						},
+					},
+				}),
+				description: fields.text({
+					label: "Description",
+					multiline: true,
+					validation: {
+						isRequired: true,
+					},
+				}),
+				order: fields.integer({
+					label: "Order",
+					description: "The order in which the project appears in the list",
+					validation: {
+						isRequired: true,
+					},
+				}),
+				featured: fields.checkbox({
+					label: "Featured",
+					description: "Whether this project should be featured",
+					defaultValue: false,
+				}),
+				cover: fields.image({
+					label: "Cover Image",
+					description: "The main image for the project",
+					directory: "src/assets/projects",
+					publicPath: "/src/assets/projects/",
+					validation: {
+						isRequired: true,
+					},
+				}),
+				link: fields.url({
+					label: "Project Link",
+					description: "Optional link to the project website",
+				}),
+				createdAt: fields.date({
+					label: "Created At",
+					defaultValue: {
+						kind: "today",
+					},
+				}),
+				lastUpdatedAt: fields.date({
+					label: "Last Update Date",
+					defaultValue: {
+						kind: "today",
+					},
+				}),
+				hidden: fields.checkbox({
+					label: "Hidden",
+					description: "Hide this project from the list",
+					defaultValue: false,
+				}),
 				content: fields.markdoc({
 					label: "Content",
 					components: components,

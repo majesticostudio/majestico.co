@@ -27,5 +27,11 @@ export default defineMarkdocConfig({
 			},
 			render: component("./src/components/Contact.astro"),
 		},
+		HeroTitle: {
+			attributes: {
+				title: { type: String },
+			},
+			render: component("./src/components/HeroTitle.astro"),
+		},
 	},
 });
