@@ -178,7 +178,7 @@ const projectRomanNumeral = project.data.order
 		--negative-margin: calc(15 * var(--svh, 1svh));
 		--anim-progress: 0;
 		--scroll-progress: 0;
-		--parallax-progress: -200px;
+		--parallax-progress: -50px;
 		clip-path: inset(
 			calc(
 					(1 - var(--anim-progress, 1)) * var(--negative-margin) +
@@ -420,7 +420,7 @@ const projectRomanNumeral = project.data.order
 					end: "bottom top",
 					scrub: true,
 				},
-				"--parallax-progress": window.innerWidth < 768 ? 150 : 600,
+				"--parallax-progress": window.innerWidth < 768 ? 150 : 1000,
 				ease: "none",
 			});
 		});
