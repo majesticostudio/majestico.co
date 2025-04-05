@@ -195,6 +195,12 @@ const projectRomanNumeral = project.data.order
 				)
 		);
 	}
+	@media screen and (min-width: 768px) {
+		[data-expand-on-scroll] {
+			--parallax-progress: -200px;
+		}
+	}
+
 	[data-expand-on-scroll] img {
 		transform: translate3d(0px, var(--parallax-progress), 0px);
 	}
@@ -406,15 +412,15 @@ const projectRomanNumeral = project.data.order
 				"--scroll-progress": "1",
 			});
 
-			// Add parallax effect
-			gsap.to(imageElement, {
+			// Add parallax effect only on desktop
+			gsap.to(sectionElement, {
 				scrollTrigger: {
 					trigger: sectionElement,
 					start: "top 80%",
 					end: "bottom top",
 					scrub: true,
 				},
-				"--parallax-progress": window.innerWidth < 768 ? 500 : 600,
+				"--parallax-progress": window.innerWidth < 768 ? 150 : 600,
 				ease: "none",
 			});
 		});
